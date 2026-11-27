@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/**": ["./public/fonts/**/*"],
   },
+  experimental: {
+    // Gallery photos are uploaded through a server action (≤ 4 MB, under Vercel's 4.5 MB request limit).
+    serverActions: { bodySizeLimit: "4.2mb" },
+  },
   // Native / data-file packages used by the print-file engine must not be bundled.
   serverExternalPackages: ["@resvg/resvg-js", "pdfkit", "svg-to-pdfkit"],
   images: {

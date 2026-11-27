@@ -4,7 +4,8 @@ export const UPLOAD_LIMITS = {
   artworkMaxBytes: 25 * MB,
   logoMaxBytes: 5 * MB,
   csvMaxBytes: 2 * MB,
-  galleryImageMaxBytes: 8 * MB,
+  // Uploaded through a server action, so it must stay under Vercel's 4.5 MB request body limit.
+  galleryImageMaxBytes: 4 * MB,
 } as const;
 
 // D-010
