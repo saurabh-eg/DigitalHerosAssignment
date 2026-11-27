@@ -71,14 +71,14 @@ isOneToOne: false
                   ]
                 },"designs": {
                   Row: {
-                    "configuration": NonNullable<Json>,"created_at": string,"created_by": string | null,"current_version": number,"id": string,"is_saved": boolean,"name": string,"organization_id": string,"product_id": string,"source": Database["public"]['Enums']["artwork_source"],"template_id": string | null,"updated_at": string
+                    "configuration": NonNullable<Json>,"created_at": string,"created_by": string | null,"csv_dataset_id": string | null,"current_version": number,"draft_scene": Json | null,"id": string,"is_saved": boolean,"name": string,"organization_id": string,"product_id": string,"source": Database["public"]['Enums']["artwork_source"],"template_id": string | null,"updated_at": string,"upload_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "configuration": NonNullable<Json>,"created_at"?: string,"created_by"?: string | null,"current_version"?: number,"id"?: string,"is_saved"?: boolean,"name"?: string,"organization_id": string,"product_id": string,"source"?: Database["public"]['Enums']["artwork_source"],"template_id"?: string | null,"updated_at"?: string
+                    "configuration": NonNullable<Json>,"created_at"?: string,"created_by"?: string | null,"csv_dataset_id"?: string | null,"current_version"?: number,"draft_scene"?: Json | null,"id"?: string,"is_saved"?: boolean,"name"?: string,"organization_id": string,"product_id": string,"source"?: Database["public"]['Enums']["artwork_source"],"template_id"?: string | null,"updated_at"?: string,"upload_id"?: string | null
                   }
                   Update: {
-                    "configuration"?: NonNullable<Json>,"created_at"?: string,"created_by"?: string | null,"current_version"?: number,"id"?: string,"is_saved"?: boolean,"name"?: string,"organization_id"?: string,"product_id"?: string,"source"?: Database["public"]['Enums']["artwork_source"],"template_id"?: string | null,"updated_at"?: string
+                    "configuration"?: NonNullable<Json>,"created_at"?: string,"created_by"?: string | null,"csv_dataset_id"?: string | null,"current_version"?: number,"draft_scene"?: Json | null,"id"?: string,"is_saved"?: boolean,"name"?: string,"organization_id"?: string,"product_id"?: string,"source"?: Database["public"]['Enums']["artwork_source"],"template_id"?: string | null,"updated_at"?: string,"upload_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -86,6 +86,12 @@ isOneToOne: false
       columns: ["created_by"]
 isOneToOne: false
       referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "designs_csv_dataset_id_fkey"
+      columns: ["csv_dataset_id"]
+isOneToOne: false
+      referencedRelation: "csv_datasets"
       referencedColumns: ["id"]
     },{
       foreignKeyName: "designs_organization_id_fkey"
@@ -104,6 +110,12 @@ isOneToOne: false
       columns: ["template_id"]
 isOneToOne: false
       referencedRelation: "templates"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "designs_upload_id_fkey"
+      columns: ["upload_id"]
+isOneToOne: false
+      referencedRelation: "uploads"
       referencedColumns: ["id"]
     }
                   ]
