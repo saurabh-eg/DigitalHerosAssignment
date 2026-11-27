@@ -11,6 +11,8 @@ export default defineConfig({
   use: {
     baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000",
     trace: "retain-on-failure",
+    // E2E_SLOWMO=600 with --headed slows each action down so a run can be watched.
+    launchOptions: { slowMo: Number(process.env.E2E_SLOWMO ?? 0) },
   },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
