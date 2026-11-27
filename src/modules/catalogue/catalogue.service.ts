@@ -80,6 +80,8 @@ export async function listSellableProducts(): Promise<ProductDetail[]> {
   return loadProducts();
 }
 
+export const getTaxSettings = catalogueRepository.listTax;
+
 export async function getGallery(): Promise<GalleryItem[]> {
   return catalogueRepository.listGalleryItems();
 }

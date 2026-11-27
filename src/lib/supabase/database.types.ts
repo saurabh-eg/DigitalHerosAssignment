@@ -209,14 +209,14 @@ isOneToOne: true
                   ]
                 },"order_items": {
                   Row: {
-                    "configuration": NonNullable<Json>,"created_at": string,"csv_dataset_id": string | null,"design_id": string | null,"design_version": number | null,"discount_bps": number,"id": string,"line_total_minor": number,"order_id": string,"product_id": string,"product_name": string,"product_type": string,"quantity": number,"setup_fee_minor": number,"tax_minor": number,"unit_price_minor": number
+                    "configuration": NonNullable<Json>,"created_at": string,"csv_dataset_id": string | null,"design_id": string | null,"design_version": number | null,"discount_bps": number,"discount_minor": number,"id": string,"line_total_minor": number,"order_id": string,"product_id": string,"product_name": string,"product_type": string,"quantity": number,"setup_fee_minor": number,"tax_minor": number,"unit_price_minor": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "configuration": NonNullable<Json>,"created_at"?: string,"csv_dataset_id"?: string | null,"design_id"?: string | null,"design_version"?: number | null,"discount_bps"?: number,"id"?: string,"line_total_minor": number,"order_id": string,"product_id": string,"product_name": string,"product_type": string,"quantity": number,"setup_fee_minor"?: number,"tax_minor"?: number,"unit_price_minor": number
+                    "configuration": NonNullable<Json>,"created_at"?: string,"csv_dataset_id"?: string | null,"design_id"?: string | null,"design_version"?: number | null,"discount_bps"?: number,"discount_minor"?: number,"id"?: string,"line_total_minor": number,"order_id": string,"product_id": string,"product_name": string,"product_type": string,"quantity": number,"setup_fee_minor"?: number,"tax_minor"?: number,"unit_price_minor": number
                   }
                   Update: {
-                    "configuration"?: NonNullable<Json>,"created_at"?: string,"csv_dataset_id"?: string | null,"design_id"?: string | null,"design_version"?: number | null,"discount_bps"?: number,"id"?: string,"line_total_minor"?: number,"order_id"?: string,"product_id"?: string,"product_name"?: string,"product_type"?: string,"quantity"?: number,"setup_fee_minor"?: number,"tax_minor"?: number,"unit_price_minor"?: number
+                    "configuration"?: NonNullable<Json>,"created_at"?: string,"csv_dataset_id"?: string | null,"design_id"?: string | null,"design_version"?: number | null,"discount_bps"?: number,"discount_minor"?: number,"id"?: string,"line_total_minor"?: number,"order_id"?: string,"product_id"?: string,"product_name"?: string,"product_type"?: string,"quantity"?: number,"setup_fee_minor"?: number,"tax_minor"?: number,"unit_price_minor"?: number
                   }
                   Relationships: [
                     {

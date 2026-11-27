@@ -2,6 +2,7 @@ import "server-only";
 import { SECURITY_LIMITS } from "@/constants/limits";
 import type { Bucket } from "@/constants/storage";
 import type { Json } from "@/lib/supabase/database.types";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { supabasePublic } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { ProductConfiguration } from "@/modules/catalogue/catalogue.validator";
@@ -12,6 +13,56 @@ import { templateSceneSchema, type Scene } from "./designer.validator";
 
 /** Validated domain objects stored in jsonb columns. */
 type JsonColumn = NonNullable<Json>;
+
+/**
+ * `service` reads bypass RLS. Only order fulfilment and proof generation use them (e.g. inside the Stripe
+ * webhook, where no user is signed in), after the order itself has been verified.
+ */
+type Access = "user" | "service";
+async function db(access: Access) {
+  return access === "service" ? supabaseAdmin() : await createSupabaseServerClient();
+}
+
+export async function findVersion(designId: string, version: number, access: Access = "user") {
+  const supabase = await db(access);
+  const { data, error } = await supabase
+    .from("design_versions")
+    .select("version, scene, upload_id, csv_dataset_id, designs(product_id, configuration, organization_id)")
+    .eq("design_id", designId)
+    .eq("version", version)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function findCsvRowsSource(datasetId: string, access: Access = "user") {
+  const supabase = await db(access);
+  const { data, error } = await supabase
+    .from("csv_datasets")
+    .select("id, columns, row_count, mapping, uploads(bucket, path)")
+    .eq("id", datasetId)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function findUploadAs(id: string, access: Access) {
+  const supabase = await db(access);
+  const { data, error } = await supabase
+    .from("uploads")
+    .select("id, bucket, path, original_name, mime_type, size_bytes, width_px, height_px, needs_preflight")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function downloadAs(bucket: Bucket, path: string, access: Access): Promise<Uint8Array | null> {
+  const supabase = await db(access);
+  const { data, error } = await supabase.storage.from(bucket).download(path);
+  if (error || !data) return null;
+  return new Uint8Array(await data.arrayBuffer());
+}
 
 const DESIGN_COLUMNS =
   "id, organization_id, product_id, template_id, name, configuration, source, current_version, is_saved, draft_scene, upload_id, csv_dataset_id, updated_at";
