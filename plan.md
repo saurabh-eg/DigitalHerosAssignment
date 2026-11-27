@@ -241,7 +241,7 @@ All six §10 modules: account & profile status · order history with current sta
 - Archive: completed jobs retained and searchable for repeat and event orders.
 - Xero-ready CSV export + `AccountingProvider` interface (CSV now, `XeroApiProvider` stub behind a feature flag).
 
-### P10 — UI/UX polish, performance, responsiveness
+### P10 — UI/UX polish, performance, responsiveness ✅ (Lighthouse 98–100; axe WCAG 2.1 AA clean on ~30 pages)
 - Mobile-first, checked at 360 / 768 / 1280+.
 - Subtle transitions and micro-interactions (price changes, hub tiles, pipeline board).
 - Distinctive "boutique industrial" look — not a templated print store.

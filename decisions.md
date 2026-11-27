@@ -312,6 +312,19 @@ New entries are appended with the next ID. Superseded entries stay in place and 
 - **Status:** Accepted · 2026-11-27 · PRD §05, §14
 - **Decision:** Reports offer a CSV in Xero's sales-invoice import format (one row per invoice line, UK dates, pounds, account code and `OUTPUT2` tax type; import as tax-inclusive). Cells that could be read as spreadsheet formulas are neutralised. Exported invoices get `exported_at`. The `AccountingProvider` interface has the CSV provider live and a Xero API provider stub behind `FEATURE_XERO_API`.
 
+---
+
+## Polish, performance & accessibility (P10)
+
+### D-072 · Quality bar and how it's checked
+- **Status:** Accepted · 2026-11-27 · PRD §12, §13, §16
+- **Decision:**
+  - **Performance:** Lighthouse (mobile, live site) — home 98, product configurator 99; accessibility, best practices and SEO 100; LCP ≈ 1 s, CLS 0. Catalogue pages are static (D-041), the designer loads its fonts on demand, images go through `next/image`.
+  - **Accessibility:** an axe-core suite checks WCAG 2.1 A/AA on every page type — public, customer (incl. designer and basket) and console — on desktop and mobile; it runs with the e2e tests. Fixes from it: inline links are underlined (not colour-only), the warning colour was darkened for 4.5:1 on its tint.
+  - **Security headers:** HSTS (HTTPS enforced, PRD §13), `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options: DENY`, `Permissions-Policy`. A full CSP is deferred: the designer and previews rely on inline SVG.
+  - **States:** branded 404, route error boundary with a support reference, loading skeletons for account, console and designer.
+  - **SEO:** sitemap of storefront pages; robots disallows account, console, designer, basket, checkout and APIs.
+
 ### D-044 · End-to-end tests with Playwright
 - **Status:** Accepted · 2026-11-27 · PRD §16
 - **Decision:** Playwright runs against a built app (or `E2E_BASE_URL`, e.g. the Vercel URL) on a desktop and a mobile profile. Current coverage: sign-in/out and redirect-back, wrong password, customer blocked from admin, admin landing, live pricing incl. the 100-unit discount boundary, invalid size handling, calculator, gallery filter.
