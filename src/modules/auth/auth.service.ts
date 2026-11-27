@@ -73,6 +73,9 @@ export async function signIn(input: SignInInput): Promise<SessionUser> {
     if (error.status === 429) {
       throw new AppError("CONFLICT", "Too many sign-in attempts. Please wait a minute and try again.");
     }
+    if (error.code === "user_banned") {
+      throw forbidden("This account is disabled. Please contact support.");
+    }
     if (error.code === "invalid_credentials") {
       throw new AppError("UNAUTHENTICATED", "Email or password is incorrect.");
     }
