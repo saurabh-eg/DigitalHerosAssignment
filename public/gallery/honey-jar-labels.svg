@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#e9e4da"/>
+  <rect y="430" width="800" height="170" fill="#d8cfbf"/>
+  <g transform="translate(170 150)">
+    <rect x="0" y="0" width="200" height="300" rx="36" fill="#e8a33d" opacity=".9"/>
+    <rect x="20" y="-28" width="160" height="40" rx="8" fill="#3c3226"/>
+    <rect x="18" y="90" width="164" height="130" rx="10" fill="#f6efe1"/>
+    <text x="100" y="138" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#3c3226">Hollow Pine</text>
+    <text x="100" y="168" text-anchor="middle" font-family="Georgia, serif" font-size="16" font-style="italic" fill="#8a6a3b">wildflower honey</text>
+    <text x="100" y="200" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" letter-spacing="2" fill="#3c3226">340 g</text>
+  </g>
+  <g transform="translate(430 190)">
+    <rect x="0" y="0" width="170" height="260" rx="30" fill="#c98a2c" opacity=".9"/>
+    <rect x="16" y="-24" width="138" height="34" rx="7" fill="#3c3226"/>
+    <rect x="15" y="78" width="140" height="112" rx="9" fill="#f6efe1"/>
+    <text x="85" y="122" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#3c3226">Hollow Pine</text>
+    <text x="85" y="148" text-anchor="middle" font-family="Georgia, serif" font-size="14" font-style="italic" fill="#8a6a3b">heather honey</text>
+  </g>
+</svg>

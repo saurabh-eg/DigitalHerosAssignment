@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#f4f2ee"/>
+  <g transform="translate(130 160)">
+    <rect width="200" height="80" rx="12" fill="#2a2d34"/>
+    <rect x="10" y="80" width="180" height="120" rx="10" fill="#3d4250"/>
+    <rect x="-10" y="200" width="220" height="40" rx="6" fill="#2a2d34"/>
+  </g>
+  <g transform="translate(400 200) rotate(-3)" fill="#2340a8">
+    <rect width="300" height="150" fill="none" stroke="#2340a8" stroke-width="5" rx="6"/>
+    <text x="150" y="52" text-anchor="middle" font-family="Georgia, serif" font-size="28">Ashdown Studio</text>
+    <text x="150" y="88" text-anchor="middle" font-family="Arial, sans-serif" font-size="18">14 Mill Lane, Lewes</text>
+    <text x="150" y="116" text-anchor="middle" font-family="Arial, sans-serif" font-size="18">BN7 2AA</text>
+  </g>
+</svg>

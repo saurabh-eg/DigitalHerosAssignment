@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#e8e3dc"/>
+  <rect x="0" y="0" width="800" height="600" fill="#ddd5c9" opacity=".5"/>
+  <g transform="translate(150 150)">
+    <rect width="500" height="300" rx="150" fill="#c89b6d"/>
+    <rect x="14" y="14" width="472" height="272" rx="136" fill="#d9ae80"/>
+    <text x="250" y="170" text-anchor="middle" font-family="Georgia, serif" font-size="76" fill="#4a2f1b">Kiln</text>
+    <text x="250" y="222" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" letter-spacing="6" fill="#4a2f1b">COFFEE + CERAMICS</text>
+    <circle cx="70" cy="150" r="8" fill="#8a6440"/><circle cx="430" cy="150" r="8" fill="#8a6440"/>
+  </g>
+</svg>

@@ -119,6 +119,22 @@ on conflict (product_id) do update set
   area_rate_minor_per_cm2 = excluded.area_rate_minor_per_cm2, per_character_minor = excluded.per_character_minor,
   min_unit_minor = excluded.min_unit_minor;
 
+-- ─── Gallery: illustrated sample jobs (D-039); admins replace them with real photos ──
+insert into public.gallery_items (division_id, title, description, image_path, sort_order)
+select d.id, g.title, g.description, g.image_path, g.sort_order
+from (values
+  ('labels-stickers', 'Jar labels for a honey producer', '75 × 50 mm on white gloss vinyl, 500 per flavour.', '/gallery/honey-jar-labels.svg', 1),
+  ('labels-stickers', 'Die-cut brand stickers', 'Mixed shapes on white vinyl for a coffee roaster and a plant shop.', '/gallery/die-cut-stickers.svg', 2),
+  ('race-event-numbers', 'Riverside 10K race numbers', 'A5 Tyvek, 1,200 bibs merged from the entry list with first names.', '/gallery/riverside-10k-bibs.svg', 1),
+  ('race-event-numbers', 'Trail relay team bibs', 'Waterproof synthetic, team and leg printed per runner.', '/gallery/trail-relay-bibs.svg', 2),
+  ('mtb-boards', 'Enduro number boards', '180 × 220 mm polypropylene, numbered 1–150.', '/gallery/enduro-number-boards.svg', 1),
+  ('stamps', 'Studio address stamp', '58 × 22 mm self-inking, three lines of text.', '/gallery/address-stamp.svg', 1),
+  ('trophies', 'Club end-of-season plates', '90 × 30 mm brushed brass, 24 engraved names.', '/gallery/club-trophy-plates.svg', 1),
+  ('laser-cut', 'Café wall sign', '450 × 300 mm birch ply, cut and engraved.', '/gallery/cafe-sign-laser-cut.svg', 1)
+) as g (division_slug, title, description, image_path, sort_order)
+join public.divisions d on d.slug = g.division_slug
+where not exists (select 1 from public.gallery_items gi where gi.image_path = g.image_path);
+
 -- ─── Volume tiers: defaults from 100 units (PRD §05), stamps override ──────
 insert into public.volume_tiers (product_id, min_quantity, discount_bps) values
   (null, 100, 1000), (null, 250, 1500), (null, 500, 2000), (null, 1000, 2500)
