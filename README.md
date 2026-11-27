@@ -1,6 +1,8 @@
-# Digital Heroes — Web-to-Print Platform
+# Makeready — Web-to-Print Platform by Digital Heroes
 
 Configure, design, proof and order custom print across six divisions: labels & stickers, race & event numbers, MTB boards, stamps, trophies and laser-cut work.
+
+*Makeready* is the printer's term for the setup work done before a press run — fitting for a platform that turns an approved design into production-ready files, not just an upload.
 
 - Plan and PRD coverage: [`plan.md`](./plan.md)
 - Every decision and PRD interpretation: [`decisions.md`](./decisions.md)

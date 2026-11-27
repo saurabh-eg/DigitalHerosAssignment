@@ -6,13 +6,13 @@ import { productionFilePath } from "@/constants/storage";
 describe("productionFilePath", () => {
   it("follows OrderID_ProductType_Date_Output inside an order folder", () => {
     const path = productionFilePath({
-      orderNumber: "DH-000123",
+      orderNumber: "MR-000123",
       productType: "Race Numbers",
       date: new Date("2026-03-14T10:00:00Z"),
       output: "Row-0001",
       extension: "pdf",
     });
-    expect(path).toBe("orders/DH-000123/DH-000123_Race-Numbers_20260314_Row-0001.pdf");
+    expect(path).toBe("orders/MR-000123/MR-000123_Race-Numbers_20260314_Row-0001.pdf");
   });
 });
 

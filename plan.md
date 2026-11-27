@@ -1,4 +1,4 @@
-# Digital Heroes — Web-to-Print Platform · Execution Plan
+# Makeready (by Digital Heroes) — Web-to-Print Platform · Execution Plan
 
 Source: `Digital_Heroes_PRD_level 2.pdf` (v1.0, March 2026). Every decision taken while building is logged in [`decisions.md`](./decisions.md).
 

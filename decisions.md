@@ -182,6 +182,15 @@ New entries are appended with the next ID. Superseded entries stay in place and 
 - **Status:** Accepted · 2026-11-27 · PRD §12
 - **Decision:** On screens below `lg`, a sticky bar at the bottom keeps the live total in view while options are changed, since the full price panel sits below the form on phones. A second navigation row appears under the header on mobile.
 
+### D-045 · Product name: Makeready
+- **Status:** Accepted · 2026-11-27 · PRD §12
+- **Decision:** The platform is named **Makeready**, credited as "Makeready by Digital Heroes". Order and invoice numbers use `MR-` / `MR-INV-` prefixes. The name lives in `SITE_CONFIG.name`; the company in `SITE_CONFIG.company`.
+- **Why:** "Makeready" is the printer's term for the setup done before a press run — it describes what the platform does (production-ready output, not just artwork upload) and fits the print-trade visual direction without sounding like a generic print store.
+
+### D-046 · No Vercel ↔ Supabase marketplace integration
+- **Status:** Accepted · 2026-11-27 · PRD §15
+- **Decision:** Environment variables are added manually in Vercel. The marketplace integration is not used: it provisions its own Supabase project and its own variable names, which would duplicate the existing, already-migrated project.
+
 ### D-044 · End-to-end tests with Playwright
 - **Status:** Accepted · 2026-11-27 · PRD §16
 - **Decision:** Playwright runs against a built app (or `E2E_BASE_URL`, e.g. the Vercel URL) on a desktop and a mobile profile. Current coverage: sign-in/out and redirect-back, wrong password, customer blocked from admin, admin landing, live pricing incl. the 100-unit discount boundary, invalid size handling, calculator, gallery filter.

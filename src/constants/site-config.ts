@@ -1,9 +1,11 @@
 export const SITE_CONFIG = {
-  name: "Digital Heroes",
-  tagline: "Custom print, made properly.",
+  // D-045: product name; the platform is built for (and credited to) Digital Heroes.
+  name: "Makeready",
+  company: "Digital Heroes",
+  tagline: "Custom print, priced as you choose it.",
   description:
     "Labels, race numbers, MTB boards, stamps, trophies and laser-cut work — configure, design, proof and order online.",
-  supportEmail: "support@digitalheroes.example",
+  supportEmail: "support@makeready.example",
   locale: "en-GB",
   currency: "GBP",
 } as const;
@@ -25,8 +27,8 @@ export const DELIVERY_CONFIG = {
 } as const;
 
 export const ACCOUNTING_CONFIG = {
-  invoicePrefix: "DH-INV-",
-  orderPrefix: "DH",
+  invoicePrefix: "MR-INV-",
+  orderPrefix: "MR",
   salesAccountCode: "200",
   deliveryAccountCode: "260",
   paymentTermsDays: 0,
