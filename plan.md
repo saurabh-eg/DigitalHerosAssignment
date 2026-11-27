@@ -187,7 +187,7 @@ Secrets and environment-specific values never go in constants — only in `.env.
 - Middleware guarding `/account/*` and `/admin/*`, plus role checks in controllers.
 - Seed: six divisions, at least one parameter-driven product per division, templates, pricing tiers, test customer & admin.
 
-### P2 — Catalogue & pricing engine
+### P2 — Catalogue & pricing engine ✅ (23 unit + 18 e2e tests passing)
 - Home page with a **product hub of equal-weight tiles** as navigation.
 - Division and product pages with configurator: size, material, orientation, quantity — parameter-driven, no SKU per size.
 - Shared pure `price()`; server recomputes at quote and checkout.

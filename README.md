@@ -41,6 +41,7 @@ Supabase dashboard settings: **Auth → Email → Confirm email: off** (D-033) a
 | `npm run typecheck` | Generates Next.js route types, then `tsc --noEmit` |
 | `npm run test` | Unit tests (Vitest) |
 | `npm run test:integration` | Live RLS/permission tests against the Supabase project |
+| `npm run test:e2e` | Playwright end-to-end tests (desktop + mobile) against a running app; set `E2E_BASE_URL` to target another URL |
 | `npm run check` | Lint + typecheck + tests |
 | `npm run db:push` / `db:types` / `db:seed-users` | Database migrations, generated types, test accounts |
 

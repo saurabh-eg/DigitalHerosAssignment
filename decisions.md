@@ -147,9 +147,44 @@ New entries are appended with the next ID. Superseded entries stay in place and 
 - **Why:** Real orders get cancelled; keeping it outside the six stages leaves the PRD pipeline intact.
 
 ### D-025 · Visual direction and design tokens
-- **Status:** Accepted (to be refined in P10) · 2026-11-27 · PRD §12
-- **Decision:** Warm paper neutral base (`#f4f1ea`), near-black ink, one signal-vermilion accent (`#e4572e`) reserved for calls to action. Space Grotesk for headings (geometric), Inter for body (dense specs on mobile), JetBrains Mono for spec labels. Tokens are semantic Tailwind theme variables in `globals.css`. Light theme only; motion respects `prefers-reduced-motion`.
-- **Why:** "Boutique industrial": a confident accent on a neutral base, geometric headings, a body face built for dense specs — while not copying the PRD document's own palette.
+- **Status:** Superseded by D-038 · 2026-11-27 · PRD §12
+- **Decision:** Warm cream base, vermilion accent, Space Grotesk / Inter / JetBrains Mono with uppercase mono labels.
+
+### D-038 · Visual direction (revised): press room
+- **Status:** Accepted · 2026-11-27 · PRD §12
+- **Context:** The first direction (D-025) matched the most common generic "AI-generated" look — cream + vermilion + uppercase mono labels — and the PRD explicitly scores originality and says it must not look templated.
+- **Decision:** Drawn from the print trade: cool press-room paper `#eef0f2`, white sheets, rich-black ink `#1a2030`, hairlines `#cdd3db`, and **process magenta** `#c8006a` (a CMYK ink) reserved for calls to action. Jost (geometric, Futura lineage) for headings; IBM Plex Sans with tabular figures for body and dense specs. No all-caps or mono labels. The one bold element is the hero's live **job ticket** framed with printer's crop marks; everything else stays quiet. Motion only responds to the user (price roll-ups), and respects reduced-motion.
+
+---
+
+## Catalogue & pricing (P2)
+
+### D-039 · Pricing formula
+- **Status:** Accepted · 2026-11-27 · PRD §05
+- **Decision:** `unit = max(round((base + area_cm² × area_rate + characters × per_char) × material_factor), min_unit)`; the volume tier (highest floor reached) discounts the unit price; `line = unit × qty + setup fee`; VAT is extracted per line (`gross × rate / (1 + rate)`). Delivery is order-level (D-013). The same pure `pricing.engine.ts` runs in the browser (instant price) and on the server (`pricing.service.quote`, re-validating the configuration against the catalogue), so a browser-supplied price is never trusted.
+- **Why:** Covers every division with one parameter-driven model: area for labels and laser-cut, size-based per-unit for bibs/boards/stamps, plus characters for engraving.
+
+### D-040 · Engraving characters are an estimate until the design exists
+- **Status:** Accepted · 2026-11-27 · PRD §05
+- **Context:** Trophy plates are priced per engraved character, but the text isn't known in the configurator.
+- **Decision:** The configurator asks for an estimated character count (default 40); the order is re-priced from the actual design text at checkout and the customer sees the confirmed price before paying.
+
+### D-041 · Static catalogue pages
+- **Status:** Accepted · 2026-11-27 · PRD §13
+- **Decision:** Catalogue reads use a cookie-free Supabase client so the hub, division, product, calculator and gallery pages are statically generated with `revalidate = 300` (5 minutes); admin edits will also call `revalidatePath`. Every product is fetched once and passed to the client configurator, so price updates need no network round-trip.
+
+### D-042 · Gallery seeded with illustrated samples
+- **Status:** Accepted · 2026-11-27 · PRD §12
+- **Context:** The PRD asks for a gallery of real work, and no photographs of real jobs exist yet.
+- **Decision:** Eight illustrated sample jobs (SVG, two divisions with two each) are seeded and visibly labelled "Illustrated sample". Admins replace them with real photos through gallery management (P9); photos are served from the public `gallery` bucket.
+
+### D-043 · Mobile price visibility
+- **Status:** Accepted · 2026-11-27 · PRD §12
+- **Decision:** On screens below `lg`, a sticky bar at the bottom keeps the live total in view while options are changed, since the full price panel sits below the form on phones. A second navigation row appears under the header on mobile.
+
+### D-044 · End-to-end tests with Playwright
+- **Status:** Accepted · 2026-11-27 · PRD §16
+- **Decision:** Playwright runs against a built app (or `E2E_BASE_URL`, e.g. the Vercel URL) on a desktop and a mobile profile. Current coverage: sign-in/out and redirect-back, wrong password, customer blocked from admin, admin landing, live pricing incl. the 100-unit discount boundary, invalid size handling, calculator, gallery filter.
 
 ### D-026 · PRD file kept out of the repository
 - **Status:** Accepted · 2026-11-27

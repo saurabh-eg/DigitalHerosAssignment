@@ -20,6 +20,8 @@ export const ROUTES = {
     settings: "/account/settings",
   },
   designer: (designId: string) => `/design/${designId}`,
+  /** Starts a job from a configuration; `path` picks the designer, artwork upload or CSV merge. */
+  startJob: (query: Record<string, string>) => `/design/new?${new URLSearchParams(query).toString()}`,
   admin: {
     root: "/admin",
     pipeline: "/admin/pipeline",
