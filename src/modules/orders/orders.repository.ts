@@ -16,7 +16,7 @@ const ORDER_COLUMNS = `
   delivery_minor, tax_minor, total_minor, delivery_method, shipping_address, files_ready, reorder_of,
   placed_at, completed_at, archived_at, created_at,
   order_items(id, product_id, product_name, product_type, configuration, quantity, unit_price_minor, discount_bps,
-    discount_minor, setup_fee_minor, line_total_minor, tax_minor, design_id, design_version, csv_dataset_id, created_at)
+    discount_minor, setup_fee_minor, line_total_minor, tax_minor, design_id, design_version, csv_dataset_id, reorder_of_item_id, created_at)
 `;
 
 type OrderRow = {
@@ -55,6 +55,7 @@ type OrderRow = {
     design_id: string | null;
     design_version: number | null;
     csv_dataset_id: string | null;
+    reorder_of_item_id: string | null;
     created_at: string;
   }>;
 };
@@ -99,6 +100,7 @@ function toOrder(row: OrderRow): Order {
           designId: i.design_id,
           designVersion: i.design_version,
           csvDatasetId: i.csv_dataset_id,
+          reorderOfItemId: i.reorder_of_item_id,
         }),
       ),
   };
@@ -163,6 +165,7 @@ function itemRow(orderId: string, item: ItemWrite) {
     design_id: item.designId,
     design_version: item.designVersion,
     csv_dataset_id: item.csvDatasetId,
+    reorder_of_item_id: item.reorderOfItemId,
   };
 }
 

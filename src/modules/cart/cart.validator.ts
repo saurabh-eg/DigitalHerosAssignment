@@ -35,3 +35,5 @@ export const updateQuantitySchema = z.object({
 });
 
 export const removeItemSchema = z.object({ itemId: z.uuid() });
+
+export const reorderSchema = z.object({ orderId: z.uuid() });

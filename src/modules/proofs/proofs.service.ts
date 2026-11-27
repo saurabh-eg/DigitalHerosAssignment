@@ -45,12 +45,48 @@ async function issueProof(order: Order, item: OrderItem, actorId: string | null)
   await proofsRepository.insertEvent({ proofId, orderId: order.id, event: "issued", actorId });
 }
 
+/**
+ * A reordered line reuses the earlier line's approved proof when it is the same design version, so the
+ * customer isn't asked to approve identical artwork twice (D-007). The log records where it came from.
+ */
+async function reuseApprovedProof(order: Order, item: OrderItem): Promise<boolean> {
+  if (!item.reorderOfItemId) return false;
+  const source = await proofsRepository.findApprovedProof(item.reorderOfItemId);
+  if (!source || source.design_version !== item.designVersion) return false;
+  const proofId = await proofsRepository.insertProof({
+    orderId: order.id,
+    orderItemId: item.id,
+    version: 1,
+    designVersion: item.designVersion,
+    previewPath: source.preview_path,
+    createdBy: null,
+    status: PROOF_STATUS.APPROVED,
+  });
+  await proofsRepository.insertEvent({
+    proofId,
+    orderId: order.id,
+    event: "reorder_reused",
+    actorId: null,
+    comment: source.orders?.order_number
+      ? `Reuses approved proof v${source.version} from order ${source.orders.order_number}.`
+      : `Reuses approved proof v${source.version}.`,
+  });
+  return true;
+}
+
 /** Called after payment: issues v1 for every line that has no proof yet. Safe to call repeatedly. */
 export async function issueInitialProofs(order: Order): Promise<void> {
   const proofs = await proofsRepository.listProofs(order.id);
   for (const item of order.items) {
-    if (!proofs.some((p) => p.order_item_id === item.id)) await issueProof(order, item, null);
+    if (proofs.some((p) => p.order_item_id === item.id)) continue;
+    if (!(await reuseApprovedProof(order, item))) await issueProof(order, item, null);
   }
+}
+
+/** True when every line's latest proof is approved, i.e. the order may pass the approval gate. */
+export async function allProofsApproved(order: Order): Promise<boolean> {
+  const latest = latestPerItem(order, await listForOrder(order));
+  return [...latest.values()].every((p) => p?.status === PROOF_STATUS.APPROVED);
 }
 
 export async function listForOrder(order: Order): Promise<Proof[]> {

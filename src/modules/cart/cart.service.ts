@@ -6,6 +6,7 @@ import { getTaxSettings } from "@/modules/catalogue/catalogue.service";
 import type { SessionUser } from "@/modules/auth/auth.types";
 import { engravedCharacters, loadLatestForOrder, loadSavedVersion, type SavedVersion } from "@/modules/designer/designer.orders";
 import * as ordersRepository from "@/modules/orders/orders.repository";
+import { getOrderForUser } from "@/modules/orders/orders.service";
 import type { Order, ShippingAddress } from "@/modules/orders/orders.types";
 import { applyTax, deliveryCharge } from "@/modules/pricing/pricing.engine";
 import { quote } from "@/modules/pricing/pricing.service";
@@ -14,7 +15,7 @@ import type { DeliveryMethod } from "@/modules/pricing/pricing.types";
 type ItemWrite = ordersRepository.ItemWrite;
 
 /** Prices one saved design version on the server from the current catalogue (never from the browser). */
-async function priceSaved(saved: SavedVersion, quantity: number): Promise<ItemWrite> {
+async function priceSaved(saved: SavedVersion, quantity: number, reorderOfItemId: string | null = null): Promise<ItemWrite> {
   const configuration = { ...saved.configuration, quantity, characterCount: engravedCharacters(saved) };
   const result = await quote(saved.productId, configuration);
   return {
@@ -32,6 +33,7 @@ async function priceSaved(saved: SavedVersion, quantity: number): Promise<ItemWr
     designId: saved.designId,
     designVersion: saved.version,
     csvDatasetId: saved.csvDatasetId,
+    reorderOfItemId,
   };
 }
 
@@ -93,7 +95,7 @@ export async function updateQuantity(itemId: string, quantity: number): Promise<
   if (!line?.designId || line.designVersion === null) throw notFound("That item isn't in your basket.");
   if (line.csvDatasetId) throw new AppError("VALIDATION", "Spreadsheet jobs are priced by row count. Change the spreadsheet to change the quantity.");
   const saved = await loadSavedVersion(line.designId, line.designVersion, "user");
-  await ordersRepository.updateItem(itemId, cart.id, await priceSaved(saved, quantity));
+  await ordersRepository.updateItem(itemId, cart.id, await priceSaved(saved, quantity, line.reorderOfItemId));
   return recalculateTotals(cart.id);
 }
 
@@ -125,7 +127,30 @@ export async function refreshForCheckout(user: SessionUser): Promise<Order> {
     if (!line.designId || line.designVersion === null) throw new AppError("VALIDATION", "An item in your basket has no saved design.");
     const saved = await loadSavedVersion(line.designId, line.designVersion, "user");
     const quantity = saved.csvRows ? saved.csvRows.length : line.quantity;
-    await ordersRepository.updateItem(line.id, cart.id, await priceSaved(saved, quantity));
+    await ordersRepository.updateItem(line.id, cart.id, await priceSaved(saved, quantity, line.reorderOfItemId));
   }
   return recalculateTotals(cart.id);
+}
+
+/**
+ * PRD §09 one-click reorder: puts every line of a past order back in the basket with the same approved
+ * artwork version and quantity, priced at today's rates (D-007, D-065).
+ */
+export async function reorder(orderId: string): Promise<Order> {
+  const user = await requireUser();
+  const source = await getOrderForUser(orderId, user);
+  if (source.status !== "production" && source.status !== "completed") {
+    throw new AppError("VALIDATION", "Only orders with approved artwork can be reordered.");
+  }
+  const existing = await openQuote(user);
+  const quoteId = existing?.id ?? (await ordersRepository.createQuote(user.organizationId, user.id, source.id));
+  for (const line of source.items) {
+    if (!line.designId || line.designVersion === null) continue;
+    const saved = await loadSavedVersion(line.designId, line.designVersion, "user");
+    const already = existing?.items.find((i) => i.reorderOfItemId === line.id);
+    const priced = await priceSaved(saved, line.quantity, line.id);
+    if (already) await ordersRepository.updateItem(already.id, quoteId, priced);
+    else await ordersRepository.insertItem(quoteId, priced);
+  }
+  return recalculateTotals(quoteId);
 }

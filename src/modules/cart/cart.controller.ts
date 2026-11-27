@@ -7,7 +7,7 @@ import { getProductById } from "@/modules/catalogue/catalogue.service";
 import { previewSavedVersion, type ItemPreview } from "@/modules/designer/designer.orders";
 import type { Order } from "@/modules/orders/orders.types";
 import * as cartService from "./cart.service";
-import { addToCartSchema, deliverySchema, removeItemSchema, updateQuantitySchema } from "./cart.validator";
+import { addToCartSchema, deliverySchema, removeItemSchema, reorderSchema, updateQuantitySchema } from "./cart.validator";
 
 export type LineDetails = { preview: ItemPreview | null; materialName: string | null; productPath: string | null };
 
@@ -41,6 +41,15 @@ export async function addToCart(input: unknown): Promise<ActionResult> {
   return handleAction(async () => {
     const { designId } = parseInput(addToCartSchema, input);
     await cartService.addDesign(designId);
+    revalidatePath(ROUTES.cart);
+    redirect(ROUTES.cart);
+  });
+}
+
+export async function reorder(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
+  return handleAction(async () => {
+    const { orderId } = parseInput(reorderSchema, formDataToObject(formData));
+    await cartService.reorder(orderId);
     revalidatePath(ROUTES.cart);
     redirect(ROUTES.cart);
   });

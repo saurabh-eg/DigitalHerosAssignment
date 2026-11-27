@@ -22,6 +22,20 @@ export async function findProof(proofId: string) {
   return data;
 }
 
+/** The approved proof of an order line, with its order number (source for reorders). */
+export async function findApprovedProof(orderItemId: string) {
+  const { data, error } = await supabaseAdmin()
+    .from("proofs")
+    .select("id, version, design_version, preview_path, orders(order_number)")
+    .eq("order_item_id", orderItemId)
+    .eq("status", "approved")
+    .order("version", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
 export async function insertProof(row: {
   orderId: string;
   orderItemId: string;
@@ -29,6 +43,7 @@ export async function insertProof(row: {
   designVersion: number | null;
   previewPath: string | null;
   createdBy: string | null;
+  status?: ProofStatus;
 }): Promise<string> {
   const { data, error } = await supabaseAdmin()
     .from("proofs")
@@ -39,6 +54,7 @@ export async function insertProof(row: {
       design_version: row.designVersion,
       preview_path: row.previewPath,
       created_by: row.createdBy,
+      status: row.status ?? "pending",
     })
     .select("id")
     .single();

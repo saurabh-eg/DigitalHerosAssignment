@@ -20,6 +20,10 @@ export async function setDeliveryAction(prev: ActionResult, formData: FormData) 
   return cartController.setDelivery(prev, formData);
 }
 
+export async function reorderAction(prev: ActionResult, formData: FormData) {
+  return cartController.reorder(prev, formData);
+}
+
 export async function checkoutAction() {
   return paymentsController.startCheckout();
 }

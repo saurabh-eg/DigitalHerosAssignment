@@ -27,6 +27,8 @@ export type OrderItem = {
   designId: string | null;
   designVersion: number | null;
   csvDatasetId: string | null;
+  /** Set on one-click reorders: the earlier line whose approved artwork this line reuses. */
+  reorderOfItemId: string | null;
 };
 
 export type Order = {

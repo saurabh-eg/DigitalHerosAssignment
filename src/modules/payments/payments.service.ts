@@ -17,7 +17,8 @@ import { sendOrderEmail } from "@/modules/notifications/notifications.service";
 import * as ordersRepository from "@/modules/orders/orders.repository";
 import { transition } from "@/modules/orders/orders.service";
 import type { Order } from "@/modules/orders/orders.types";
-import { issueInitialProofs } from "@/modules/proofs/proofs.service";
+import { enqueueForOrder, triggerWorker } from "@/modules/print-files/print-files.service";
+import { allProofsApproved, issueInitialProofs } from "@/modules/proofs/proofs.service";
 import * as paymentsRepository from "./payments.repository";
 
 /** PRD §05: one-off Stripe Checkout for the basket (no subscriptions). Returns the hosted payment page URL. */
@@ -104,6 +105,18 @@ async function advanceAfterPayment(order: Order, sendEmails: boolean): Promise<v
     await issueInitialProofs(current);
     log("proofs issued, moving to proof");
     current = await transition(current.id, ORDER_STATUS.PROOF, { actorId: null, note: "Proofs issued (v1)." });
+    // A pure reorder reuses approved proofs, so it can pass the approval gate straight away.
+    if (await allProofsApproved(current)) {
+      log("all proofs already approved (reorder), moving to production");
+      await transition(current.id, ORDER_STATUS.PRODUCTION, {
+        actorId: null,
+        note: "Reorder: approved artwork reused, no new approval needed.",
+        viaApproval: true,
+      });
+      await enqueueForOrder(current);
+      await triggerWorker();
+      return;
+    }
     if (sendEmails) {
       await sendOrderEmail(EMAIL_TEMPLATE.PROOF_READY, contact.email, { orderId: order.id, orderNumber: order.orderNumber, customerName: contact.full_name });
     }
