@@ -229,6 +229,39 @@ New entries are appended with the next ID. Superseded entries stay in place and 
 - **Status:** Accepted · 2026-11-27
 - **Decision:** `/design/new` shows the configuration and a template picker; the design row is created only when the customer submits the form. Creating records on a GET would let link prefetching create empty designs.
 
+---
+
+## Checkout, proofs & approval (P5–P6)
+
+### D-055 · How engraving characters are counted
+- **Status:** Accepted · 2026-11-27 · PRD §05
+- **Decision:** For per-character products the basket counts the non-space characters of every text element in the saved design. For spreadsheet merges it uses the longest row, so no plate is under-charged. This replaces the configurator's estimate (D-040).
+
+### D-056 · UK delivery only
+- **Status:** Accepted · 2026-11-27 · PRD §05
+- **Decision:** Delivery addresses are UK-only (postcode validated), matching GBP prices and UK VAT. Collection from the workshop is free. International shipping would need per-country rates and tax rules and is out of scope.
+
+### D-057 · Prices are fixed at payment; revisions keep the quantity
+- **Status:** Accepted · 2026-11-27 · PRD §08
+- **Decision:** After a change request the customer edits the design, saves a new version and resubmits it, which issues the next proof (v2, v3…). The paid price doesn't change, so a revision must keep the same quantity (and CSV row count); otherwise the customer is told to keep the row count. Superseded proofs can't be approved.
+
+### D-058 · Payment fulfilment is idempotent and resumable
+- **Status:** Accepted · 2026-11-27 · PRD §05, §16
+- **Decision:** Both the Stripe webhook and the success page call the same fulfilment. A conditional update (`pending → succeeded`) lets exactly one caller record the payment. Each later step (invoice, ORDER → ARTWORK, proofs, ARTWORK → PROOF) checks the order's current state, so a retry after a partial failure continues where it stopped. A paid amount that differs from the order total is recorded in the order history for staff to check.
+- **Why:** Works locally without a webhook, survives webhook retries and duplicate deliveries, and never double-processes a payment.
+
+### D-059 · Stripe Checkout shape
+- **Status:** Accepted · 2026-11-27 · PRD §05
+- **Decision:** One Stripe line per order line (quantity 1, amount = the VAT-inclusive line total incl. setup) plus a delivery line, so Stripe's total always equals ours to the penny. Every line is re-priced on the server immediately before the session is created. The idempotency key is a hash of the basket contents, so a double-click can't open two sessions. Payments are one-off only.
+
+### D-060 · Proof files and the approval gate
+- **Status:** Accepted · 2026-11-27 · PRD §08
+- **Decision:** A proof references an immutable design version; its preview PNG is rendered on the server from that version by the same renderer as the print file (row 1 for spreadsheet merges) and stored privately. For uploaded artwork the customer's own file is the proof. The approval log stores who approved or requested changes, which version, when, and the comment. An order moves PROOF → PRODUCTION only when every line's latest proof is approved; `orders.service.transition` refuses that move otherwise, and print jobs are queued at that moment.
+
+### D-061 · Emails never block the workflow
+- **Status:** Accepted · 2026-11-27 · PRD §13
+- **Decision:** Order confirmation, proof ready, change requested, proof approved, production and completion emails go through Resend with escaped content. A failed send is logged and never rolls back a payment or approval; the order timeline is the record.
+
 ### D-044 · End-to-end tests with Playwright
 - **Status:** Accepted · 2026-11-27 · PRD §16
 - **Decision:** Playwright runs against a built app (or `E2E_BASE_URL`, e.g. the Vercel URL) on a desktop and a mobile profile. Current coverage: sign-in/out and redirect-back, wrong password, customer blocked from admin, admin landing, live pricing incl. the 100-unit discount boundary, invalid size handling, calculator, gallery filter.
