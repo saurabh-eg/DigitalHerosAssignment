@@ -191,6 +191,44 @@ New entries are appended with the next ID. Superseded entries stay in place and 
 - **Status:** Accepted · 2026-11-27 · PRD §15
 - **Decision:** Environment variables are added manually in Vercel. The marketplace integration is not used: it provisions its own Supabase project and its own variable names, which would duplicate the existing, already-migrated project.
 
+---
+
+## Designer & rendering (P3–P4)
+
+### D-047 · One renderer for editor, proof and print file
+- **Status:** Accepted · 2026-11-27 · PRD §06, §07
+- **Decision:** Designs are stored as our own scene JSON in millimetres. A single pure renderer (`designer/render`) turns a scene into SVG, converting text to vector outlines from the bundled font files with opentype.js. The browser editor draws exactly that SVG; the server will turn the same SVG into the PDF/PNG print files (P7). The editor is a custom SVG editor rather than Konva/Fabric.
+- **Why:** "What is approved matches what is printed" holds by construction, not by keeping two renderers in sync. Outlined text is also the print-trade norm (no missing fonts at the printer).
+
+### D-048 · Drafts and immutable versions
+- **Status:** Accepted · 2026-11-27 · PRD §08, §09
+- **Decision:** The working draft lives on `designs.draft_scene` and is autosaved (debounced 1.5 s). "Save design" runs full validation on the server and writes an immutable `design_versions` row (v1, v2…). Orders and proofs will always reference a saved version, never the draft.
+
+### D-049 · Size-independent templates
+- **Status:** Accepted · 2026-11-27 · PRD §04, §14
+- **Decision:** Template element positions and sizes are fractions of the print area, so one template fits every size of a parameter-driven product; font sizes are derived from box height and fitting rules keep text inside. Adding a template is one row in `templates` — no code change.
+
+### D-050 · Fonts and text layout
+- **Status:** Accepted · 2026-11-27 · PRD §06
+- **Decision:** Five Open Font Licence families (Inter, Oswald, Roboto Slab, Playfair Display, Archivo Black) ship in `public/fonts` and are traced into the server bundle. Text is laid out glyph by glyph (advance widths, pair kerning, tracking) without OpenType shaping/ligatures.
+- **Why:** opentype.js v2's shaping throws on some GSUB lookups in these fonts; plain glyph layout is deterministic and keeps names and race numbers exactly as typed. A regression test guards glyph orientation (v2's `toPathData` flips Y by default).
+
+### D-051 · Uploads go browser → storage, then the server re-checks the bytes
+- **Status:** Accepted · 2026-11-27 · PRD §06, §13
+- **Decision:** Files upload directly to the customer's own storage folder (RLS-enforced `<org>/<design>/…`), then a server action re-downloads them and decides what they really are by magic bytes, not name or browser type. Rejected files are deleted. Checks: size limits; SVGs with scripts refused; PNG effective DPI at print size (reject < 150, warn < 300); PDF must open (no password) and its page size is compared with trim + bleed; legacy PostScript-based `.ai` files are accepted and flagged for manual preflight (D-008).
+
+### D-052 · How the print-area lock behaves
+- **Status:** Accepted · 2026-11-27 · PRD §06
+- **Decision:** Every change passes through `constrainToArea`. Moving is clamped at the edge. Text and boxes at right angles clamp only the overflowing side (widening a text box doesn't flatten it); images and freely rotated elements scale uniformly. Resizing is symmetric about the centre; text scales with its box. The server re-checks every element is inside its print area on every save.
+
+### D-053 · Variable data (CSV) rules
+- **Status:** Accepted · 2026-11-27 · PRD §07
+- **Decision:** Text elements can be linked to a spreadsheet field. A CSV (header row, ≤ 2,000 rows, ≤ 20 columns, ≤ 120 characters per cell) is parsed in the browser for instant feedback and again on the server. Columns are auto-matched to fields by name and can be re-mapped. Quantity follows the row count and must fall within the product's quantity range. Every row is checked against the fitting rules; saving is blocked while any row can't fit, and the failing rows are listed and previewable.
+
+### D-054 · Starting a job is a POST
+- **Status:** Accepted · 2026-11-27
+- **Decision:** `/design/new` shows the configuration and a template picker; the design row is created only when the customer submits the form. Creating records on a GET would let link prefetching create empty designs.
+
 ### D-044 · End-to-end tests with Playwright
 - **Status:** Accepted · 2026-11-27 · PRD §16
 - **Decision:** Playwright runs against a built app (or `E2E_BASE_URL`, e.g. the Vercel URL) on a desktop and a mobile profile. Current coverage: sign-in/out and redirect-back, wrong password, customer blocked from admin, admin landing, live pricing incl. the 100-unit discount boundary, invalid size handling, calculator, gallery filter.

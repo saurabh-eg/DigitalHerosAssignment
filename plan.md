@@ -195,12 +195,12 @@ Secrets and environment-specific values never go in constants — only in `.env.
 - Standalone **instant price calculator** usable by visitors.
 - **Gallery of real work** filtered by product family.
 
-### P3 — Shared rendering core
+### P3 — Shared rendering core ✅ (scene → SVG with outlined text; PDF/PNG conversion lands with P7)
 - Scene JSON schema, mm unit system, print areas with bleed and safe-zone geometry.
 - `fit()`: shrink-to-fit, horizontal tracking, min/max font size; returns an error when content cannot fit at minimum.
 - One renderer → SVG → PDF/PNG, snapshot-tested.
 
-### P4 — Web-to-print designer
+### P4 — Web-to-print designer ✅ (38 unit + 26 e2e tests passing)
 - Template-driven editing: add/edit text, fonts, sizes, colours, logo upload (PNG/SVG), move/resize/rotate.
 - **Print-area lock:** movement clamped (rotated bounding box included); bleed/safe guides; server rejects out-of-bounds scenes.
 - **Real-time proof preview** on a product mockup.
