@@ -15,7 +15,8 @@
     "db:types": "node scripts/db.mjs types",
     "db:seed-users": "node --env-file=.env.local scripts/seed-users.mjs",
     "test:integration": "vitest run --config vitest.integration.config.mts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "db:reset-demo": "node --env-file=.env.local scripts/reset-demo-data.mjs"
   },
   "dependencies": {
     "@fontsource/archivo-black": "^5.3.0",
