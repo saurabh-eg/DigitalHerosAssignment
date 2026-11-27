@@ -25,6 +25,13 @@ export async function previewStart(query: Record<string, string | string[] | und
   return preview ? { input: parsed.data, ...preview } : null;
 }
 
+/** The product's default template rendered at its default size, for the product page hero (null if none). */
+export async function productPreview(productId: string, widthMm: number, heightMm: number): Promise<{ svg: string; name: string } | null> {
+  const preview = await designerService.previewTemplates(productId, widthMm, heightMm).catch(() => null);
+  const template = preview?.templates.find((t) => t.isDefault) ?? preview?.templates[0];
+  return template ? { svg: template.svg, name: template.name } : null;
+}
+
 export async function getDesignForPage(designId: string): Promise<DesignView> {
   if (!z.uuid().safeParse(designId).success) notFound();
   try {

@@ -3,6 +3,7 @@ import { IBM_Plex_Sans, Jost } from "next/font/google";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SITE_CONFIG } from "@/constants/site-config";
+import * as catalogueController from "@/modules/catalogue/catalogue.controller";
 import { signOutAction } from "./(auth)/actions";
 import "./globals.css";
 
@@ -14,7 +15,8 @@ export const metadata: Metadata = {
   description: SITE_CONFIG.description,
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const families = await catalogueController.footerFamilies().catch(() => []);
   return (
     <html
       lang="en-GB"
@@ -23,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <SiteHeader signOutAction={signOutAction} />
         {children}
-        <SiteFooter />
+        <SiteFooter families={families} />
       </body>
     </html>
   );
