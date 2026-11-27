@@ -41,6 +41,8 @@ export const PRINT_JOB_LIMITS = {
 export const SECURITY_LIMITS = {
   passwordMinLength: 8,
   signedUrlTtlSeconds: 300,
+  // Longer-lived links for images shown inside an open designer session.
+  designerAssetUrlTtlSeconds: 3600,
 } as const;
 
 export const PAGINATION = {

@@ -5,6 +5,12 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.
 // D-029: Cache Components left off — most routes read the auth cookie.
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Server-side rendering of designs (validation, proofs, print files) reads the font files from disk.
+  outputFileTracingIncludes: {
+    "/**": ["./public/fonts/**/*"],
+  },
+  // Native / data-file packages used by the print-file engine must not be bundled.
+  serverExternalPackages: ["@resvg/resvg-js", "pdfkit", "svg-to-pdfkit"],
   images: {
     // Admin-uploaded gallery photos are served from the public Supabase bucket.
     remotePatterns: supabaseHost
