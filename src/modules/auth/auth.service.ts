@@ -70,7 +70,13 @@ export async function signIn(input: SignInInput): Promise<SessionUser> {
     if (error.code === "email_not_confirmed") {
       throw new AppError("FORBIDDEN", "Please confirm your email address first — check your inbox.");
     }
-    throw new AppError("UNAUTHENTICATED", "Email or password is incorrect.");
+    if (error.status === 429) {
+      throw new AppError("CONFLICT", "Too many sign-in attempts. Please wait a minute and try again.");
+    }
+    if (error.code === "invalid_credentials") {
+      throw new AppError("UNAUTHENTICATED", "Email or password is incorrect.");
+    }
+    throw error;
   }
 
   const user = await getSessionUser();
