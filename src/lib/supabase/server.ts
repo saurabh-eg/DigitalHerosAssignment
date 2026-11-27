@@ -3,6 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { publicEnv } from "@/config/env.public";
 import type { Database } from "./database.types";
+import { uncachedFetch } from "./fetch";
 
 /** Request-scoped client acting as the signed-in user — RLS applies. */
 export async function createSupabaseServerClient() {
@@ -10,6 +11,7 @@ export async function createSupabaseServerClient() {
   const env = publicEnv();
 
   return createServerClient<Database>(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, {
+    global: { fetch: uncachedFetch },
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll(cookiesToSet) {
