@@ -220,13 +220,13 @@ Secrets and environment-specific values never go in constants — only in `.env.
 - **Approval gate** enforced in DB and service layer: production files generate/unlock only after approval.
 - Emails: proof ready, changes requested, approved.
 
-### P7 — Print-file engine (server-side)
+### P7 — Print-file engine (server-side) ✅ (vector PDF, PNG, CSV row files + merged PDF; worker verified)
 - Approval enqueues a `print_job`; worker runs in batches (`waitUntil` + cron retry for stuck jobs).
 - Per order: hi-res PDF + PNG with product-specific bleed and DPI.
 - CSV merge: one file per row, plus combined multi-page PDF and ZIP.
 - Files named `OrderID_ProductType_Date_Output` in per-order folders, private bucket.
 
-### P8 — Customer dashboard
+### P8 — Customer dashboard ✅ (all six §10 modules; reorder and invoice PDF covered by e2e)
 All six §10 modules: account & profile status · order history with current status · saved designs with configuration · active proofs and version state · one-click reorder · downloadable invoices/receipts. Customers never see production files or other customers' data (RLS-tested).
 
 ### P9 — Admin / production console

@@ -262,6 +262,32 @@ New entries are appended with the next ID. Superseded entries stay in place and 
 - **Status:** Accepted · 2026-11-27 · PRD §13
 - **Decision:** Order confirmation, proof ready, change requested, proof approved, production and completion emails go through Resend with escaped content. A failed send is logged and never rolls back a payment or approval; the order timeline is the record.
 
+---
+
+## Print files, dashboard & reorder (P7–P8)
+
+### D-062 · Vector print PDFs written directly from the scene
+- **Status:** Accepted · 2026-11-27 · PRD §07
+- **Decision:** Print PDFs are written with pdf-lib straight from the scene: text as outlined glyph paths (same layout code as the editor), boxes as paths, images embedded (SVG logos rasterised at 600 dpi). Each page is trim + bleed with TrimBox and BleedBox set. TrueType quadratic curves are degree-elevated to exact cubics (pdf-lib's quadratic helper draws a different curve).
+- **Why:** No font files or native PDF libraries at runtime (serverless-safe), true vector output, and identical geometry to the approved proof.
+
+### D-063 · Print PNG size cap
+- **Status:** Accepted · 2026-11-27 · PRD §07
+- **Decision:** Print PNGs are rendered at the product's DPI including bleed, capped at 8,000 px on the long edge to stay within serverless memory (e.g. a 600 mm laser-cut sign at 600 dpi becomes ~338 dpi). The vector PDF is unaffected and is the primary production file.
+
+### D-064 · Print queue without a long-running server
+- **Status:** Accepted · 2026-11-27 · PRD §07, §13
+- **Decision:** Approval queues one `print_jobs` row per line. `/api/v1/print-jobs/run` (secret- or admin-authorised) answers 202 and processes the queue after the response within a 45 s budget; CSV jobs advance in batches of 25 rows and are released (not failed) when time runs out, then the endpoint re-triggers itself. Claims are atomic, stale locks are reclaimed after 10 minutes, failures retry up to 3 times. A daily Vercel cron is the safety net (Hobby plans allow daily crons only). `files_ready` is set when every job of an order has succeeded.
+- **Outputs:** designed jobs → `Print.pdf` + `Print.png`; CSV jobs → `Row-0001.pdf…` + `Merged.pdf`; uploaded PDF → passed through; uploaded PNG/SVG → PNG + PDF; legacy `.ai` → original file for manual preflight. All named `OrderID_ProductType_Date_Output` in `orders/<OrderID>/`. ZIP bundles are built on demand at download (P9) rather than stored.
+
+### D-065 · One-click reorder
+- **Status:** Accepted · 2026-11-27 · PRD §09
+- **Decision:** "Reorder" on any order in production or completed adds every line to the basket with the same approved design version and quantity, priced at today's rates, each line pointing at its source line. At payment, a line whose source proof was approved for the same design version gets proof v1 auto-approved with a "reused for reorder" log entry; if every line qualifies, the order passes the approval gate straight into production and print files are generated. Saved designs can also be re-ordered from the Saved designs page (latest version, normal proofing).
+
+### D-066 · Invoice PDFs on demand
+- **Status:** Accepted · 2026-11-27 · PRD §10
+- **Decision:** Invoice PDFs are rendered on request from the stored Xero-shaped invoice rows using pdf-lib's built-in Helvetica (no font files), so they always match the accounting data. Access follows order ownership (customer's organization or admin).
+
 ### D-044 · End-to-end tests with Playwright
 - **Status:** Accepted · 2026-11-27 · PRD §16
 - **Decision:** Playwright runs against a built app (or `E2E_BASE_URL`, e.g. the Vercel URL) on a desktop and a mobile profile. Current coverage: sign-in/out and redirect-back, wrong password, customer blocked from admin, admin landing, live pricing incl. the 100-unit discount boundary, invalid size handling, calculator, gallery filter.
