@@ -209,14 +209,14 @@ isOneToOne: true
                   ]
                 },"order_items": {
                   Row: {
-                    "configuration": NonNullable<Json>,"created_at": string,"csv_dataset_id": string | null,"design_id": string | null,"design_version": number | null,"discount_bps": number,"discount_minor": number,"id": string,"line_total_minor": number,"order_id": string,"product_id": string,"product_name": string,"product_type": string,"quantity": number,"setup_fee_minor": number,"tax_minor": number,"unit_price_minor": number
+                    "configuration": NonNullable<Json>,"created_at": string,"csv_dataset_id": string | null,"design_id": string | null,"design_version": number | null,"discount_bps": number,"discount_minor": number,"id": string,"line_total_minor": number,"order_id": string,"product_id": string,"product_name": string,"product_type": string,"quantity": number,"reorder_of_item_id": string | null,"setup_fee_minor": number,"tax_minor": number,"unit_price_minor": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "configuration": NonNullable<Json>,"created_at"?: string,"csv_dataset_id"?: string | null,"design_id"?: string | null,"design_version"?: number | null,"discount_bps"?: number,"discount_minor"?: number,"id"?: string,"line_total_minor": number,"order_id": string,"product_id": string,"product_name": string,"product_type": string,"quantity": number,"setup_fee_minor"?: number,"tax_minor"?: number,"unit_price_minor": number
+                    "configuration": NonNullable<Json>,"created_at"?: string,"csv_dataset_id"?: string | null,"design_id"?: string | null,"design_version"?: number | null,"discount_bps"?: number,"discount_minor"?: number,"id"?: string,"line_total_minor": number,"order_id": string,"product_id": string,"product_name": string,"product_type": string,"quantity": number,"reorder_of_item_id"?: string | null,"setup_fee_minor"?: number,"tax_minor"?: number,"unit_price_minor": number
                   }
                   Update: {
-                    "configuration"?: NonNullable<Json>,"created_at"?: string,"csv_dataset_id"?: string | null,"design_id"?: string | null,"design_version"?: number | null,"discount_bps"?: number,"discount_minor"?: number,"id"?: string,"line_total_minor"?: number,"order_id"?: string,"product_id"?: string,"product_name"?: string,"product_type"?: string,"quantity"?: number,"setup_fee_minor"?: number,"tax_minor"?: number,"unit_price_minor"?: number
+                    "configuration"?: NonNullable<Json>,"created_at"?: string,"csv_dataset_id"?: string | null,"design_id"?: string | null,"design_version"?: number | null,"discount_bps"?: number,"discount_minor"?: number,"id"?: string,"line_total_minor"?: number,"order_id"?: string,"product_id"?: string,"product_name"?: string,"product_type"?: string,"quantity"?: number,"reorder_of_item_id"?: string | null,"setup_fee_minor"?: number,"tax_minor"?: number,"unit_price_minor"?: number
                   }
                   Relationships: [
                     {
@@ -242,6 +242,12 @@ isOneToOne: false
       columns: ["product_id"]
 isOneToOne: false
       referencedRelation: "products"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "order_items_reorder_of_item_id_fkey"
+      columns: ["reorder_of_item_id"]
+isOneToOne: false
+      referencedRelation: "order_items"
       referencedColumns: ["id"]
     }
                   ]
@@ -680,7 +686,7 @@ isOneToOne: false
             [_ in never]: never
           }
           Enums: {
-            "artwork_source": "designer"|"upload","delivery_method": "delivery"|"collection","order_status": "quote"|"order"|"artwork"|"proof"|"production"|"completed"|"cancelled","payment_status": "pending"|"succeeded"|"failed"|"refunded","pricing_strategy": "area"|"per_unit"|"per_character","print_file_kind": "print_pdf"|"print_png"|"merged_pdf"|"row_pdf"|"bundle_zip","print_job_status": "queued"|"running"|"succeeded"|"failed","proof_event_type": "issued"|"approved"|"changes_requested"|"reorder_reused","proof_status": "pending"|"approved"|"changes_requested"|"superseded","upload_kind": "artwork"|"logo"|"csv","user_role": "customer"|"admin"
+            "artwork_source": "designer"|"upload","delivery_method": "delivery"|"collection","order_status": "quote"|"order"|"artwork"|"proof"|"production"|"completed"|"cancelled","payment_status": "pending"|"succeeded"|"failed"|"refunded","pricing_strategy": "area"|"per_unit"|"per_character","print_file_kind": "print_pdf"|"print_png"|"merged_pdf"|"row_pdf"|"bundle_zip"|"original","print_job_status": "queued"|"running"|"succeeded"|"failed","proof_event_type": "issued"|"approved"|"changes_requested"|"reorder_reused","proof_status": "pending"|"approved"|"changes_requested"|"superseded","upload_kind": "artwork"|"logo"|"csv","user_role": "customer"|"admin"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -796,7 +802,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "artwork_source": ["designer", "upload"],"delivery_method": ["delivery", "collection"],"order_status": ["quote", "order", "artwork", "proof", "production", "completed", "cancelled"],"payment_status": ["pending", "succeeded", "failed", "refunded"],"pricing_strategy": ["area", "per_unit", "per_character"],"print_file_kind": ["print_pdf", "print_png", "merged_pdf", "row_pdf", "bundle_zip"],"print_job_status": ["queued", "running", "succeeded", "failed"],"proof_event_type": ["issued", "approved", "changes_requested", "reorder_reused"],"proof_status": ["pending", "approved", "changes_requested", "superseded"],"upload_kind": ["artwork", "logo", "csv"],"user_role": ["customer", "admin"]
+            "artwork_source": ["designer", "upload"],"delivery_method": ["delivery", "collection"],"order_status": ["quote", "order", "artwork", "proof", "production", "completed", "cancelled"],"payment_status": ["pending", "succeeded", "failed", "refunded"],"pricing_strategy": ["area", "per_unit", "per_character"],"print_file_kind": ["print_pdf", "print_png", "merged_pdf", "row_pdf", "bundle_zip", "original"],"print_job_status": ["queued", "running", "succeeded", "failed"],"proof_event_type": ["issued", "approved", "changes_requested", "reorder_reused"],"proof_status": ["pending", "approved", "changes_requested", "superseded"],"upload_kind": ["artwork", "logo", "csv"],"user_role": ["customer", "admin"]
           }
         }
 } as const
