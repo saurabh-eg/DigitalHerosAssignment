@@ -63,7 +63,7 @@ export default async function ProductAdminPage({ params }: PageProps<"/admin/cat
         <p className="mt-1 text-ink-muted">
           {product.divisions?.name}. File code {product.product_type}.{" "}
           {product.is_active && product.divisions && (
-            <Link href={ROUTES.product(product.divisions.slug, product.slug)} className="text-accent hover:underline">
+            <Link href={ROUTES.product(product.divisions.slug, product.slug)} className="text-accent underline underline-offset-4">
               View on storefront
             </Link>
           )}

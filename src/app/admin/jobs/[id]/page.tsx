@@ -110,7 +110,7 @@ export default async function JobPage({ params }: PageProps<"/admin/jobs/[id]">)
                             <li key={p.id}>
                               v{p.version} ({p.status.replace("_", " ")}) from design v{p.designVersion}
                               {p.previewUrl && (
-                                <a href={p.previewUrl} target="_blank" rel="noreferrer" className="ml-2 text-accent hover:underline">
+                                <a href={p.previewUrl} target="_blank" rel="noreferrer" className="ml-2 text-accent underline underline-offset-2">
                                   view
                                 </a>
                               )}

@@ -127,7 +127,7 @@ export default async function AccountOverviewPage() {
       </Card>
 
       <p className="text-sm text-ink-muted">
-        Need a receipt? <Link href={ROUTES.account.invoices} className="text-accent hover:underline">Download invoices</Link>.
+        Need a receipt? <Link href={ROUTES.account.invoices} className="text-accent underline underline-offset-4">Download invoices</Link>.
       </p>
     </div>
   );
