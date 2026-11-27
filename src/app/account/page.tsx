@@ -109,7 +109,7 @@ export default async function AccountOverviewPage() {
           <ul className="flex flex-col divide-y divide-line">
             {recentOrders.map((o) => (
               <li key={o.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                <Link href={ROUTES.account.order(o.id)} className="text-sm">
+                <Link prefetch={false} href={ROUTES.account.order(o.id)} className="text-sm">
                   <span className="font-medium">{o.orderNumber}</span>{" "}
                   <span className="text-ink-muted">{o.items.map((i) => i.productName).join(", ")}</span>
                 </Link>

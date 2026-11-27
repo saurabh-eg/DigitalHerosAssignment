@@ -47,7 +47,7 @@ export default async function PipelinePage() {
             {col.rows.length === 0 && <p className="px-1 py-3 text-sm text-ink-muted">Nothing here.</p>}
             {col.rows.map((j) => (
               <article key={j.id} className="flex flex-col gap-1.5 rounded-md bg-surface p-3 text-sm shadow-[0_1px_0_var(--color-line)]">
-                <Link href={ROUTES.admin.job(j.id)} className="flex items-baseline justify-between gap-2 hover:text-accent">
+                <Link prefetch={false} href={ROUTES.admin.job(j.id)} className="flex items-baseline justify-between gap-2 hover:text-accent">
                   <span className="font-semibold">{j.orderNumber}</span>
                   <span className="text-xs text-ink-muted">{age(j.placedAt)}</span>
                 </Link>

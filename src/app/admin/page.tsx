@@ -67,7 +67,7 @@ export default async function AdminOverviewPage() {
         <ul className="divide-y divide-line rounded-[var(--radius-card)] border border-line bg-surface">
           {recent.rows.map((j) => (
             <li key={j.id}>
-              <Link href={ROUTES.admin.job(j.id)} className="grid gap-2 p-3 text-sm hover:bg-paper sm:grid-cols-[7rem_1fr_auto_auto_6rem] sm:items-center">
+              <Link prefetch={false} href={ROUTES.admin.job(j.id)} className="grid gap-2 p-3 text-sm hover:bg-paper sm:grid-cols-[7rem_1fr_auto_auto_6rem] sm:items-center">
                 <span className="font-medium">{j.orderNumber}</span>
                 <span className="truncate text-ink-muted">{j.customerName ?? j.customerEmail}</span>
                 <StatusBadge status={j.status} label={ORDER_STATUS_LABEL[j.status]} />

@@ -22,6 +22,9 @@ export function extensionOf(name: string): string {
  * rejects any other path. The server then re-checks the bytes before the file is used.
  */
 export async function uploadToStorage(bucket: Bucket, organizationId: string, designId: string, file: File): Promise<string> {
+  // Let the server refresh the session first (D-073): a long designer session may have an expired token,
+  // and the browser client is configured not to refresh it itself.
+  await fetch("/api/v1/me", { cache: "no-store" });
   const ext = extensionOf(file.name);
   const path = `${organizationId}/${designId}/${crypto.randomUUID()}.${ext}`;
   const { error } = await supabaseBrowser()

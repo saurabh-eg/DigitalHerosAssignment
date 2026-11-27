@@ -86,7 +86,7 @@ export function JobTable({ rows, total, filters, basePath }: { rows: JobRow[]; t
             {rows.map((j) => (
               <tr key={j.id} className="hover:bg-paper">
                 <td className="p-3">
-                  <Link href={ROUTES.admin.job(j.id)} className="font-medium hover:text-accent">
+                  <Link prefetch={false} href={ROUTES.admin.job(j.id)} className="font-medium hover:text-accent">
                     {j.orderNumber}
                   </Link>
                   {j.isReorder && <span className="ml-1.5 text-xs text-accent">reorder</span>}

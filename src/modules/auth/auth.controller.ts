@@ -83,3 +83,15 @@ export async function requirePageAdmin(): Promise<SessionUser> {
 export async function getSessionUser(): Promise<SessionUser | null> {
   return authService.getSessionUser();
 }
+
+/**
+ * GET /api/v1/me — who is signed in, for the header. Served through proxy.ts, so an expired access token is
+ * refreshed here on the server instead of by a second refresher in the browser (D-073).
+ */
+export async function me(): Promise<Response> {
+  const user = await authService.getSessionUser();
+  const body = user
+    ? { signedIn: true, email: user.email, fullName: user.fullName, role: user.role, basketItems: await authService.basketItemCount(user) }
+    : { signedIn: false };
+  return Response.json(body, { headers: { "cache-control": "private, no-store" } });
+}

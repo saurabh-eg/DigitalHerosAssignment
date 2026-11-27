@@ -19,6 +19,13 @@ export async function findSessionProfile(userId: string) {
   return data;
 }
 
+export async function countBasketItems(userId: string): Promise<number> {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.from("orders").select("order_items(count)").eq("customer_id", userId).eq("status", "quote").maybeSingle();
+  if (error) throw error;
+  return (data?.order_items as unknown as Array<{ count: number }> | undefined)?.[0]?.count ?? 0;
+}
+
 export async function signUp(params: { email: string; password: string; fullName: string; redirectTo: string }) {
   const supabase = await createSupabaseServerClient();
   return supabase.auth.signUp({

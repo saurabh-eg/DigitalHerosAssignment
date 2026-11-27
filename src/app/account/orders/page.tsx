@@ -28,7 +28,7 @@ export default async function OrdersPage() {
         <ul className="flex flex-col divide-y divide-line rounded-[var(--radius-card)] border border-line bg-surface">
           {orders.map((o) => (
             <li key={o.id}>
-              <Link href={ROUTES.account.order(o.id)} className="grid gap-2 p-4 hover:bg-paper sm:grid-cols-[8rem_1fr_auto_auto] sm:items-center sm:gap-6">
+              <Link prefetch={false} href={ROUTES.account.order(o.id)} className="grid gap-2 p-4 hover:bg-paper sm:grid-cols-[8rem_1fr_auto_auto] sm:items-center sm:gap-6">
                 <span className="font-display font-semibold">{o.orderNumber}</span>
                 <span className="text-sm text-ink-muted">
                   {o.items.map((i) => `${i.quantity.toLocaleString("en-GB")} × ${i.productName}`).join(", ")}

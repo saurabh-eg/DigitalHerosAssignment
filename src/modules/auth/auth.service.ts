@@ -26,6 +26,11 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
   };
 });
 
+/** Number of lines in the user's open basket (the order in `quote` status). */
+export async function basketItemCount(user: SessionUser): Promise<number> {
+  return authRepository.countBasketItems(user.id);
+}
+
 export async function requireUser(): Promise<SessionUser> {
   const user = await getSessionUser();
   if (!user) throw unauthenticated();
