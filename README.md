@@ -126,10 +126,10 @@ The PRD §16 checklist maps to: signup & login (`auth.spec`), configuration & li
 
 ## Known limitations
 
-- **Email delivery**: Resend is in sandbox (no verified domain), so mail only reaches the Resend account owner; sends are logged and never block an order (D-034). Verify a domain and change `EMAIL_FROM` to go live.
-- **Colour**: print files are RGB; CMYK conversion would need ICC tooling (D-009).
-- **Large PNGs** are capped at 8,000 px on the long edge; the vector PDF is the primary print file (D-063).
-- **Uploaded PDFs** are passed through as the print file; they aren't rasterised for PNG output.
-- **Content-Security-Policy** isn't set yet because the designer uses inline SVG; other security headers are (D-072).
-- **Direct Xero API** is a stub behind `FEATURE_XERO_API`; the CSV export is live (D-071).
+- **Email delivery**: Resend is in sandbox (no verified domain), so mail only reaches the Resend account owner.
+- **Colour**: print files are RGB. CMYK conversion would need ICC tooling (D-009).
+- **Large PNGs** are capped at 8,000 px on the long edge, the vector PDF is the primary print file (D-063).
+- **Uploaded PDFs** are passed through as the print file. they aren't rasterised for PNG output.
+- **Content-Security-Policy** isn't set yet because the designer uses inline SVG other security headers are (D-072).
+- **Direct Xero API** is a stub behind `FEATURE_XERO_API` the CSV export is live (D-071).
 - **Delivery** is UK-only (D-056).
