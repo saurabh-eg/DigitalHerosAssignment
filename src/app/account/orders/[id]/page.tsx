@@ -3,6 +3,9 @@ import { LinePreview } from "@/components/orders/line-preview";
 import { PipelineTracker } from "@/components/orders/pipeline-tracker";
 import { Alert } from "@/components/ui/alert";
 import { ORDER_STATUS_LABEL } from "@/constants/pipeline";
+import { ROUTES } from "@/constants/routes";
+import { ReorderButton } from "@/modules/cart/components/reorder-button";
+import { reorderAction } from "../../../cart/actions";
 import { formatMoney } from "@/lib/money";
 import * as ordersController from "@/modules/orders/orders.controller";
 import { ProofPanel } from "@/modules/proofs/components/proof-panel";
@@ -23,8 +26,21 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/ac
             <p className="text-sm text-ink-muted">Placed {new Date(order.placedAt).toLocaleString("en-GB", { dateStyle: "long", timeStyle: "short" })}</p>
           )}
         </div>
-        {placed && <Alert tone="success">Payment received, thank you. Your proofs are below: please review and approve them.</Alert>}
+        {placed && order.status !== "production" && (
+          <Alert tone="success">Payment received, thank you. Your proofs are below: please review and approve them.</Alert>
+        )}
+        {placed && order.status === "production" && (
+          <Alert tone="success">Payment received, thank you. This reorder reuses your approved artwork, so it&apos;s gone straight to production.</Alert>
+        )}
         <PipelineTracker status={order.status} />
+        <div className="flex flex-wrap items-center gap-3">
+          {(order.status === "production" || order.status === "completed") && <ReorderButton orderId={order.id} action={reorderAction} />}
+          {order.placedAt && (
+            <a href={ROUTES.account.invoice(order.id)} className="inline-flex h-11 items-center rounded-full border border-line bg-surface px-5 text-sm font-medium hover:border-ink" download>
+              Download invoice
+            </a>
+          )}
+        </div>
       </header>
 
       <section className="flex flex-col gap-6">

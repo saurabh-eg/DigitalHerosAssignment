@@ -4,6 +4,7 @@ import { z } from "zod";
 import { ROUTES } from "@/constants/routes";
 import { formDataToObject, handleAction, ok, parseInput, type ActionResult } from "@/lib/action-result";
 import { AppError } from "@/lib/errors";
+import { previewSavedVersion } from "./designer.orders";
 import * as designerService from "./designer.service";
 import type { CsvData, DesignView, UploadedArtwork } from "./designer.types";
 import { csvMappingSchema, saveDraftSchema, startJobSchema } from "./designer.validator";
@@ -35,6 +36,12 @@ export async function getDesignForPage(designId: string): Promise<DesignView> {
 }
 
 export const listMyDesigns = designerService.listMyDesigns;
+
+/** Saved designs with a rendered thumbnail of their latest version (PRD §09 saved designs). */
+export async function listMyDesignsWithPreviews() {
+  const designs = await designerService.listMyDesigns();
+  return Promise.all(designs.map(async (d) => ({ ...d, preview: await previewSavedVersion(d.id, d.currentVersion, "user") })));
+}
 
 export async function saveDraft(input: unknown): Promise<ActionResult<{ savedAt: string }>> {
   return handleAction(async () => {

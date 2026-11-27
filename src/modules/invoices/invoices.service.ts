@@ -1,7 +1,10 @@
 import "server-only";
 import { ACCOUNTING_CONFIG, TAX_CONFIG } from "@/constants/site-config";
 import { getProductById, getTaxSettings } from "@/modules/catalogue/catalogue.service";
+import { notFound } from "@/lib/errors";
 import * as ordersRepository from "@/modules/orders/orders.repository";
+import { getOrderForUser, listMyOrders } from "@/modules/orders/orders.service";
+import { renderInvoicePdf } from "./invoices.pdf";
 import type { Order } from "@/modules/orders/orders.types";
 import { applyTax } from "@/modules/pricing/pricing.engine";
 import * as invoicesRepository from "./invoices.repository";
@@ -53,3 +56,41 @@ export async function createInvoiceForOrder(order: Order): Promise<void> {
 }
 
 export const findInvoiceByOrder = invoicesRepository.findInvoiceByOrder;
+
+/** Invoices for the signed-in customer's paid orders, newest first. */
+export async function listMyInvoices() {
+  const orders = await listMyOrders();
+  const invoices = await Promise.all(
+    orders.map(async (o) => {
+      const invoice = await invoicesRepository.findInvoiceByOrder(o.id);
+      return invoice ? { orderId: o.id, orderNumber: o.orderNumber, invoiceNumber: invoice.invoice_number, issuedOn: invoice.issued_on, totalMinor: invoice.total_minor, currency: invoice.currency } : null;
+    }),
+  );
+  return invoices.filter((i) => i !== null);
+}
+
+/** PDF of an invoice the current user may see (their own organization's, or any for an admin). */
+export async function invoicePdf(orderId: string): Promise<{ fileName: string; bytes: Uint8Array }> {
+  const order = await getOrderForUser(orderId);
+  const invoice = await invoicesRepository.findInvoiceByOrder(order.id);
+  if (!invoice) throw notFound("There is no invoice for this order yet.");
+  const contact = await ordersRepository.findCustomerContact(order.customerId);
+  const a = order.shippingAddress;
+  const bytes = await renderInvoicePdf({
+    invoiceNumber: invoice.invoice_number,
+    orderNumber: order.orderNumber,
+    issuedOn: invoice.issued_on,
+    currency: invoice.currency,
+    contactName: invoice.contact_name,
+    contactEmail: invoice.contact_email,
+    vatNumber: contact.vat_number,
+    address: a ? [a.line1, a.line2, a.city, a.postcode].filter(Boolean).join(", ") : null,
+    lines: [...invoice.invoice_lines]
+      .sort((x, y) => x.sort_order - y.sort_order)
+      .map((l) => ({ description: l.description, quantity: l.quantity, unitAmountMinor: l.unit_amount_minor, lineAmountMinor: l.line_amount_minor, taxMinor: l.tax_minor })),
+    netMinor: invoice.net_minor,
+    taxMinor: invoice.tax_minor,
+    totalMinor: invoice.total_minor,
+  });
+  return { fileName: `${invoice.invoice_number}.pdf`, bytes };
+}

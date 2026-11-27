@@ -17,6 +17,7 @@ export const ROUTES = {
     designs: "/account/designs",
     proofs: "/account/proofs",
     invoices: "/account/invoices",
+    invoice: (orderId: string) => `/account/invoices/${orderId}`,
     settings: "/account/settings",
   },
   designer: (designId: string) => `/design/${designId}`,
