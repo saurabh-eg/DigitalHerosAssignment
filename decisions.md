@@ -288,6 +288,30 @@ New entries are appended with the next ID. Superseded entries stay in place and 
 - **Status:** Accepted · 2026-11-27 · PRD §10
 - **Decision:** Invoice PDFs are rendered on request from the stored Xero-shaped invoice rows using pdf-lib's built-in Helvetica (no font files), so they always match the accounting data. Access follows order ownership (customer's organization or admin).
 
+---
+
+## Production console (P9)
+
+### D-067 · Console data access
+- **Status:** Accepted · 2026-11-27 · PRD §03, §11
+- **Decision:** The job database queries an `admin_order_search` view (order + customer + product families flattened; `security_invoker`, granted to the service role only), so one query filters by status, customer, date and product type with pagination. Reports come from an `admin_report(from, to)` SQL function (paid, non-cancelled orders placed in the range). Every console service calls `requireRole(admin)`; the admin area is a 404 for everyone else and the download routes return 403.
+
+### D-068 · What staff can do to an order
+- **Status:** Accepted · 2026-11-27 · PRD §11
+- **Decision:** ORDER → ARTWORK → PROOF → PRODUCTION advance automatically (payment, proofs, approval); staff mark PRODUCTION → COMPLETED (only once print files are ready, so nothing incomplete is shipped) and can cancel any open order (refunds are issued in Stripe). Completed or cancelled orders can be archived and restored; archived jobs stay searchable with their files for repeat and event orders. Staff can re-run the post-payment steps for a paid order that stopped part-way, retry failed print jobs and start the print queue.
+
+### D-069 · Disabling users
+- **Status:** Accepted · 2026-11-27 · PRD §03
+- **Decision:** Disabling sets the profile flag (our session lookup refuses it immediately) and bans the user in Supabase Auth (no sign-in or token refresh). Admins can't demote or disable themselves, and the last active admin can't be removed.
+
+### D-070 · Catalogue management in the console
+- **Status:** Accepted · 2026-11-27 · PRD §03, §04, §14
+- **Decision:** Admins create divisions and products, edit product details, print spec (bleed, safe margin, DPI), size/orientation/quantity rules (validated JSON), pricing rule, offered materials, product or default volume tiers, templates (validated JSON with a live rendered preview, default/active flags) and the gallery (JPG/PNG checked by bytes, ≤ 4 MB to stay under Vercel's request limit). New products start inactive; a product only sells once it has a pricing rule and materials. Every change revalidates the statically generated storefront. Paid orders keep their price.
+
+### D-071 · Xero export
+- **Status:** Accepted · 2026-11-27 · PRD §05, §14
+- **Decision:** Reports offer a CSV in Xero's sales-invoice import format (one row per invoice line, UK dates, pounds, account code and `OUTPUT2` tax type; import as tax-inclusive). Cells that could be read as spreadsheet formulas are neutralised. Exported invoices get `exported_at`. The `AccountingProvider` interface has the CSV provider live and a Xero API provider stub behind `FEATURE_XERO_API`.
+
 ### D-044 · End-to-end tests with Playwright
 - **Status:** Accepted · 2026-11-27 · PRD §16
 - **Decision:** Playwright runs against a built app (or `E2E_BASE_URL`, e.g. the Vercel URL) on a desktop and a mobile profile. Current coverage: sign-in/out and redirect-back, wrong password, customer blocked from admin, admin landing, live pricing incl. the 100-unit discount boundary, invalid size handling, calculator, gallery filter.

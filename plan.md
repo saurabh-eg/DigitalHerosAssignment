@@ -229,7 +229,7 @@ Secrets and environment-specific values never go in constants — only in `.env.
 ### P8 — Customer dashboard ✅ (all six §10 modules; reorder and invoice PDF covered by e2e)
 All six §10 modules: account & profile status · order history with current status · saved designs with configuration · active proofs and version state · one-click reorder · downloadable invoices/receipts. Customers never see production files or other customers' data (RLS-tested).
 
-### P9 — Admin / production console
+### P9 — Admin / production console ✅ (9 admin e2e tests on desktop + mobile)
 - Pipeline board (QUOTE → ORDER → ARTWORK → PROOF → PRODUCTION → COMPLETED) + list view.
 - Searchable job database: filter by status, customer, date, product type.
 - Ready-for-production indicator per order.
