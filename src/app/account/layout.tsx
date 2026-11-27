@@ -4,6 +4,7 @@ import * as authController from "@/modules/auth/auth.controller";
 
 const NAV = [
   { href: ROUTES.account.root, label: "Overview", exact: true },
+  { href: ROUTES.account.orders, label: "Orders" },
   { href: ROUTES.account.settings, label: "Profile & settings" },
 ];
 
