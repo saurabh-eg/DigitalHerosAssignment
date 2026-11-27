@@ -1,5 +1,7 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { triggerWorker } from "@/modules/print-files/print-files.service";
 import { z } from "zod";
 import { ROUTES } from "@/constants/routes";
 import { formDataToObject, handleAction, ok, parseInput, type ActionResult } from "@/lib/action-result";
@@ -17,6 +19,8 @@ export async function approve(_prev: ActionResult, formData: FormData): Promise<
   return handleAction(async () => {
     const { proofId, orderId } = parseInput(approveSchema, formDataToObject(formData));
     const order = await proofsService.approve(proofId);
+    // Print jobs were queued by the approval; start generating them once the response is sent.
+    if (order.status === "production") after(triggerWorker);
     revalidatePath(ROUTES.account.order(orderId));
     return ok(undefined, order.status === "production" ? "Approved. Your job is now in production." : "Approved. Please check the remaining proofs.");
   });

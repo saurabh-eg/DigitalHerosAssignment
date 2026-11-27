@@ -29,7 +29,7 @@ function slug(value: string): string {
 }
 
 /** PRD 07 naming: `OrderID_ProductType_Date_Output`, grouped in an order folder. */
-export function productionFilePath(params: { orderNumber: string; productType: string; date: Date; output: string; extension: "pdf" | "png" | "zip"; }): string {
+export function productionFilePath(params: { orderNumber: string; productType: string; date: Date; output: string; extension: "pdf" | "png" | "zip" | "ai"; }): string {
   const name = [slug(params.orderNumber), slug(params.productType), yyyymmdd(params.date), slug(params.output),].join("_");
   return `orders/${slug(params.orderNumber)}/${name}.${params.extension}`;
 }
