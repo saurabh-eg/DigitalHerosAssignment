@@ -208,12 +208,12 @@ Secrets and environment-specific values never go in constants — only in `.env.
 - **CSV variable data** (race numbers, bulk): upload → map columns to placeholders → preview rows → validate every row against fitting rules → quantity = row count.
 - Save / autosave design to the account.
 
-### P5 — Cart, checkout, order capture
+### P5 — Cart, checkout, order capture ✅ (Stripe test payments verified locally and on Vercel)
 - Cart (QUOTE) → Stripe Checkout → webhook writes payment and full order data to the customer account → ORDER → ARTWORK.
 - No subscription or recurring billing anywhere.
 - Invoice/receipt PDF; confirmation email.
 
-### P6 — Proofs & version control
+### P6 — Proofs & version control ✅ (approval gate covered by integration + e2e tests)
 - Server generates proof v1 → PROOF.
 - Customer **approves** or **requests changes** (with comment); revision via re-edit or admin-uploaded proof → v2, v3…
 - Approval log: user, version, timestamp.
