@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
+import { Pagination } from "@/components/ui/pagination";
 import { ORDER_STATUS_LABEL } from "@/constants/pipeline";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/cn";
@@ -11,8 +12,8 @@ export const metadata: Metadata = { title: "Orders" };
 
 const ACTION_NEEDED = new Set(["proof", "artwork"]);
 
-export default async function OrdersPage() {
-  const orders = await ordersController.listMyOrders();
+export default async function OrdersPage({ searchParams }: PageProps<"/account/orders">) {
+  const { orders, total, page, pageSize } = await ordersController.listMyOrdersPage(await searchParams);
   return (
     <div className="flex flex-col gap-6">
       <header>
@@ -48,6 +49,7 @@ export default async function OrdersPage() {
           ))}
         </ul>
       )}
+      {total > 0 && <Pagination basePath={ROUTES.account.orders} page={page} pageSize={pageSize} total={total} noun={["order", "orders"]} />}
     </div>
   );
 }

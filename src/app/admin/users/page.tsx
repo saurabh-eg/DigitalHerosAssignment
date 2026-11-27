@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionForm } from "@/components/admin/action-form";
+import { Pagination } from "@/components/ui/pagination";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/cn";
 import { formatMoney } from "@/lib/money";
@@ -12,7 +13,7 @@ export const metadata: Metadata = { title: "Users" };
 
 /** PRD §03 admin: manage users. */
 export default async function UsersPage({ searchParams }: PageProps<"/admin/users">) {
-  const [{ q, users }, me] = await Promise.all([usersController.listUsers(await searchParams), authController.getSessionUser()]);
+  const [{ q, users, total, page, pageSize }, me] = await Promise.all([usersController.listUsers(await searchParams), authController.getSessionUser()]);
   return (
     <div className="flex flex-col gap-6">
       <header>
@@ -81,6 +82,7 @@ export default async function UsersPage({ searchParams }: PageProps<"/admin/user
           </tbody>
         </table>
       </div>
+      <Pagination basePath={ROUTES.admin.users} page={page} pageSize={pageSize} total={total} params={{ q: q || undefined }} noun={["user", "users"]} />
     </div>
   );
 }

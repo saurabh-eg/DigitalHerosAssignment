@@ -6,8 +6,10 @@ import * as usersService from "./users.service";
 import { setDisabledSchema, setRoleSchema, userSearchSchema } from "./users.validator";
 
 export async function listUsers(query: Record<string, string | string[] | undefined>) {
-  const { q } = userSearchSchema.parse({ q: Array.isArray(query.q) ? query.q[0] : query.q });
-  return { q: q ?? "", users: await usersService.listUsers(q) };
+  const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+  const { q, page, pageSize } = userSearchSchema.parse({ q: first(query.q), page: first(query.page) });
+  const { rows, total } = await usersService.listUsers(q, page, pageSize);
+  return { q: q ?? "", users: rows, total, page, pageSize };
 }
 
 export async function setRole(_prev: ActionResult, formData: FormData): Promise<ActionResult> {

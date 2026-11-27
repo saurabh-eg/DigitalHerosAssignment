@@ -63,6 +63,11 @@ export async function getOrderForUser(orderId: string, user?: SessionUser): Prom
   return order;
 }
 
+export async function listMyOrdersPage(page: number, pageSize: number) {
+  await requireUser();
+  return ordersRepository.listOrdersForCustomerPage(page, pageSize);
+}
+
 export async function listMyOrders(): Promise<Order[]> {
   await requireUser();
   return ordersRepository.listOrdersForCustomer();

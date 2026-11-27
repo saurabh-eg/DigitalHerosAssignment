@@ -14,19 +14,19 @@ export type AdminUserRow = {
   spentMinor: number;
 };
 
-export async function listUsers(q?: string): Promise<AdminUserRow[]> {
+export async function listUsers(q: string | undefined, page: number, pageSize: number): Promise<{ rows: AdminUserRow[]; total: number }> {
   let query = supabaseAdmin()
     .from("profiles")
-    .select("id, email, full_name, company_name, role, is_disabled, created_at, orders!orders_customer_id_fkey(status, total_minor)")
+    .select("id, email, full_name, company_name, role, is_disabled, created_at, orders!orders_customer_id_fkey(status, total_minor)", { count: "exact" })
     .order("created_at", { ascending: false })
-    .limit(200);
+    .range((page - 1) * pageSize, page * pageSize - 1);
   if (q) {
     const term = q.replace(/[,()%*]/g, " ").trim();
     if (term) query = query.or(`email.ilike.%${term}%,full_name.ilike.%${term}%,company_name.ilike.%${term}%`);
   }
-  const { data, error } = await query;
+  const { data, error, count } = await query;
   if (error) throw error;
-  return data.map((p) => {
+  return { total: count ?? 0, rows: data.map((p) => {
     const paid = p.orders.filter((o) => o.status !== "quote" && o.status !== "cancelled");
     return {
       id: p.id,
@@ -39,7 +39,7 @@ export async function listUsers(q?: string): Promise<AdminUserRow[]> {
       orders: paid.length,
       spentMinor: paid.reduce((s, o) => s + o.total_minor, 0),
     };
-  });
+  }) };
 }
 
 export async function countActiveAdmins(): Promise<number> {

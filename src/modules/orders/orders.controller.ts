@@ -17,6 +17,16 @@ import { adminTransitionSchema, archiveSchema, jobSearchSchema, orderIdSchema } 
 
 export const listMyOrders = ordersService.listMyOrders;
 
+const ORDERS_PAGE_SIZE = 10;
+
+/** Customer order history, ten per page (?page=). */
+export async function listMyOrdersPage(query: Record<string, string | string[] | undefined>) {
+  const raw = Array.isArray(query.page) ? query.page[0] : query.page;
+  const page = z.coerce.number().int().min(1).catch(1).parse(raw ?? 1);
+  const { rows, total } = await ordersService.listMyOrdersPage(page, ORDERS_PAGE_SIZE);
+  return { orders: rows, total, page, pageSize: ORDERS_PAGE_SIZE };
+}
+
 function asPage<T>(fn: () => Promise<T>): Promise<T> {
   return fn().catch((error) => {
     if (error instanceof AppError && error.code === "NOT_FOUND") notFound();

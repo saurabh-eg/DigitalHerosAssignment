@@ -5,9 +5,9 @@ import { requireRole } from "@/modules/auth/auth.service";
 import * as usersRepository from "./users.repository";
 
 /** PRD §03 admin: manage users. */
-export async function listUsers(q?: string) {
+export async function listUsers(q: string | undefined, page: number, pageSize: number) {
   await requireRole(ROLE.ADMIN);
-  return usersRepository.listUsers(q);
+  return usersRepository.listUsers(q, page, pageSize);
 }
 
 /** Guards against an admin locking everyone (or themselves) out of the console. */

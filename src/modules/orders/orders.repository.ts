@@ -125,6 +125,19 @@ export async function listOrdersForCustomer(): Promise<Order[]> {
   return (data as unknown as OrderRow[]).map(toOrder);
 }
 
+/** One page of the signed-in customer's placed orders (RLS-scoped), newest first. */
+export async function listOrdersForCustomerPage(page: number, pageSize: number): Promise<{ rows: Order[]; total: number }> {
+  const supabase = await createSupabaseServerClient();
+  const { data, error, count } = await supabase
+    .from("orders")
+    .select(ORDER_COLUMNS, { count: "exact" })
+    .neq("status", "quote")
+    .order("placed_at", { ascending: false })
+    .range((page - 1) * pageSize, page * pageSize - 1);
+  if (error) throw error;
+  return { rows: (data as unknown as OrderRow[]).map(toOrder), total: count ?? 0 };
+}
+
 export async function findOpenQuote(customerId: string): Promise<Order | null> {
   const { data, error } = await supabaseAdmin()
     .from("orders")
