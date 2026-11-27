@@ -189,6 +189,12 @@ isOneToOne: false
       foreignKeyName: "invoices_order_id_fkey"
       columns: ["order_id"]
 isOneToOne: true
+      referencedRelation: "admin_order_search"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "invoices_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: true
       referencedRelation: "orders"
       referencedColumns: ["id"]
     }
@@ -235,6 +241,12 @@ isOneToOne: false
       foreignKeyName: "order_items_order_id_fkey"
       columns: ["order_id"]
 isOneToOne: false
+      referencedRelation: "admin_order_search"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "order_items_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: false
       referencedRelation: "orders"
       referencedColumns: ["id"]
     },{
@@ -273,6 +285,12 @@ isOneToOne: false
       foreignKeyName: "order_status_history_order_id_fkey"
       columns: ["order_id"]
 isOneToOne: false
+      referencedRelation: "admin_order_search"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "order_status_history_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: false
       referencedRelation: "orders"
       referencedColumns: ["id"]
     }
@@ -300,6 +318,12 @@ isOneToOne: false
       columns: ["organization_id"]
 isOneToOne: false
       referencedRelation: "organizations"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "orders_reorder_of_fkey"
+      columns: ["reorder_of"]
+isOneToOne: false
+      referencedRelation: "admin_order_search"
       referencedColumns: ["id"]
     },{
       foreignKeyName: "orders_reorder_of_fkey"
@@ -365,6 +389,12 @@ isOneToOne: false
       foreignKeyName: "payments_order_id_fkey"
       columns: ["order_id"]
 isOneToOne: false
+      referencedRelation: "admin_order_search"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payments_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: false
       referencedRelation: "orders"
       referencedColumns: ["id"]
     }
@@ -405,6 +435,12 @@ isOneToOne: true
       foreignKeyName: "print_files_order_id_fkey"
       columns: ["order_id"]
 isOneToOne: false
+      referencedRelation: "admin_order_search"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "print_files_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: false
       referencedRelation: "orders"
       referencedColumns: ["id"]
     },{
@@ -434,6 +470,12 @@ isOneToOne: false
                   }
                   Relationships: [
                     {
+      foreignKeyName: "print_jobs_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: false
+      referencedRelation: "admin_order_search"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "print_jobs_order_id_fkey"
       columns: ["order_id"]
 isOneToOne: false
@@ -529,6 +571,12 @@ isOneToOne: false
       foreignKeyName: "proof_events_order_id_fkey"
       columns: ["order_id"]
 isOneToOne: false
+      referencedRelation: "admin_order_search"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "proof_events_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: false
       referencedRelation: "orders"
       referencedColumns: ["id"]
     },{
@@ -556,6 +604,12 @@ isOneToOne: false
       columns: ["created_by"]
 isOneToOne: false
       referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "proofs_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: false
+      referencedRelation: "admin_order_search"
       referencedColumns: ["id"]
     },{
       foreignKeyName: "proofs_order_id_fkey"
@@ -680,10 +734,38 @@ isOneToOne: false
                 }
           }
           Views: {
-            [_ in never]: never
+            "admin_order_search": {
+                  Row: {
+                    "archived_at": string | null,"company_name": string | null,"completed_at": string | null,"created_at": string,"currency": string,"customer_email": string,"customer_id": string,"customer_name": string | null,"division_slugs": (string)[] | null,"files_ready": boolean,"id": string,"item_count": number | null,"order_number": string,"placed_at": string | null,"product_types": (string)[] | null,"reorder_of": string | null,"status": Database["public"]['Enums']["order_status"],"total_minor": number,"units": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "orders_customer_id_fkey"
+      columns: ["customer_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "orders_reorder_of_fkey"
+      columns: ["reorder_of"]
+isOneToOne: false
+      referencedRelation: "admin_order_search"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "orders_reorder_of_fkey"
+      columns: ["reorder_of"]
+isOneToOne: false
+      referencedRelation: "orders"
+      referencedColumns: ["id"]
+    }
+                  ]
+                }
           }
           Functions: {
-            [_ in never]: never
+            "admin_report":
+{ Args: { "p_from": string,"p_to": string }; Returns: Json
+                           }
           }
           Enums: {
             "artwork_source": "designer"|"upload","delivery_method": "delivery"|"collection","order_status": "quote"|"order"|"artwork"|"proof"|"production"|"completed"|"cancelled","payment_status": "pending"|"succeeded"|"failed"|"refunded","pricing_strategy": "area"|"per_unit"|"per_character","print_file_kind": "print_pdf"|"print_png"|"merged_pdf"|"row_pdf"|"bundle_zip"|"original","print_job_status": "queued"|"running"|"succeeded"|"failed","proof_event_type": "issued"|"approved"|"changes_requested"|"reorder_reused","proof_status": "pending"|"approved"|"changes_requested"|"superseded","upload_kind": "artwork"|"logo"|"csv","user_role": "customer"|"admin"
