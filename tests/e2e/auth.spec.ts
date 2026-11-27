@@ -41,6 +41,24 @@ test("customer signs in, sees the account, cannot open the admin console, and si
   await expect(page).toHaveURL(/\/login/);
 });
 
+test("an expired access token is refreshed by the server without signing the user out (D-073)", async ({ page, context }) => {
+  await signIn(page, ADMIN);
+  await expect(page).toHaveURL(/\/admin$/);
+  // Make the stored session look expired, as it does about an hour after signing in.
+  const auth = (await context.cookies()).filter((c) => c.name.includes("-auth-token")).sort((a, b) => a.name.localeCompare(b.name));
+  const session = JSON.parse(Buffer.from(auth.map((c) => c.value).join("").replace(/^base64-/, ""), "base64url").toString());
+  session.expires_at = Math.floor(Date.now() / 1000) - 60;
+  for (const c of auth) await context.clearCookies({ name: c.name });
+  await context.addCookies([{ ...auth[0], name: auth[0].name.replace(/\.\d+$/, ""), value: "base64-" + Buffer.from(JSON.stringify(session)).toString("base64url") }]);
+
+  for (const label of ["Pipeline", "Job database", "Reports", "Overview"]) {
+    await page.getByRole("navigation", { name: "Console" }).getByRole("link", { name: label, exact: true }).click();
+    await expect(page.getByRole("heading", { level: 1 })).not.toHaveText(/Something went wrong/);
+  }
+  await expect(page.getByRole("banner").getByRole("link", { name: "Console" })).toBeVisible();
+  await expect(page.getByRole("banner").getByRole("link", { name: "Sign in" })).toHaveCount(0);
+});
+
 test("admin signs in and lands in the production console", async ({ page }) => {
   await signIn(page, ADMIN);
   await expect(page).toHaveURL(/\/admin$/);

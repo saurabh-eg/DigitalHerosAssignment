@@ -392,3 +392,17 @@ New entries are appended with the next ID. Superseded entries stay in place and 
 ### D-036 · Server actions as thin adapters
 - **Status:** Accepted · 2026-11-27
 - **Decision:** `'use server'` files live in `app/` next to the routes that use them and only forward to module controllers. Module UI components receive actions as props, so modules never import from `app/`.
+
+### D-073 · Only the server refreshes sessions
+- **Status:** Accepted · 2026-11-27
+- **Context:** Admins were intermittently shown "Something went wrong" with "Sign in" in the header. About an hour after sign-in, `proxy.ts` and the browser Supabase client both refreshed the expired token with the same single-use refresh token; Supabase treats reuse as theft and revoked the session.
+- **Decision:** The browser client runs with `autoRefreshToken: false`. The header asks `GET /api/v1/me` (served through the proxy, which refreshes) instead of reading the session client-side, and uploads ping that endpoint first. Covered by an e2e test that expires the stored session and navigates the console.
+
+### D-074 · Functions run in Mumbai (bom1)
+- **Status:** Accepted · 2026-11-27
+- **Context:** Vercel functions ran in iad1 (US East) while the database is in ap-south-1, so every query crossed continents.
+- **Decision:** `vercel.json` pins `regions: ["bom1"]`. Dense job/order list links no longer prefetch, which had fired dozens of background renders per console page.
+
+### D-075 · URL-based pagination for long lists
+- **Status:** Accepted · 2026-11-27
+- **Decision:** A shared server-rendered `Pagination` keeps `?page=` (and filters) in the URL. Job database and archive: 20 per page; users: 20 per page (was capped at 200); customer orders: 10 per page; pipeline: 15 per stage with "See all". The admin gallery stays unpaged — it is a small curated set.
