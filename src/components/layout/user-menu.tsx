@@ -46,6 +46,11 @@ export function UserMenu({ signOutAction }: { signOutAction: () => Promise<void>
 
   return (
     <div className="flex items-center gap-1">
+      {user.role !== ROLE.ADMIN && (
+        <Link href={ROUTES.cart} className={buttonClasses({ variant: "ghost", size: "sm" })}>
+          Basket
+        </Link>
+      )}
       <Link
         href={user.role === ROLE.ADMIN ? ROUTES.admin.root : ROUTES.account.root}
         className={buttonClasses({ variant: "secondary", size: "sm" })}

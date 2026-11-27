@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import * as designerController from "@/modules/designer/designer.controller";
 import { Designer } from "@/modules/designer/components/designer";
+import { addToCartAction } from "../../cart/actions";
 import { registerAssetAction, saveCsvMappingAction, saveDraftAction, saveVersionAction } from "../actions";
 
 export const metadata: Metadata = { title: "Designer" };
@@ -18,6 +19,7 @@ export default async function DesignPage({ params, searchParams }: PageProps<"/d
           registerAsset: registerAssetAction,
           saveCsvMapping: saveCsvMappingAction,
           saveVersion: saveVersionAction,
+          addToCart: addToCartAction,
         }}
       />
     </main>

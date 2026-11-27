@@ -27,6 +27,7 @@ export type DesignerActions = {
   registerAsset: (input: unknown) => Promise<ActionResult<RegisteredAsset>>;
   saveCsvMapping: (input: unknown) => Promise<ActionResult>;
   saveVersion: (input: unknown) => Promise<ActionResult<{ version: number }>>;
+  addToCart: (input: unknown) => Promise<ActionResult>;
 };
 
 type Tab = "edit" | "data" | "artwork";
@@ -97,6 +98,7 @@ export function Designer({ view, actions, initialTab }: { view: DesignView; acti
   const [version, setVersion] = useState(view.currentVersion);
   const [templateToApply, setTemplateToApply] = useState<string | null>(null);
   const [savingVersion, setSavingVersion] = useState(false);
+  const [addingToCart, setAddingToCart] = useState(false);
 
   const values = useMemo(
     () => (csv && csv.rows[rowIndex] ? valuesForRow(csv.rows[rowIndex], csv.mapping) : undefined),
@@ -232,6 +234,15 @@ export function Designer({ view, actions, initialTab }: { view: DesignView; acti
     setMessage({ tone: "success", text: result.message ?? "Design saved." });
   }
 
+  async function addToCart() {
+    setMessage(null);
+    setAddingToCart(true);
+    // On success the action redirects to the basket; only failures come back here.
+    const result = await actions.addToCart({ designId: view.id });
+    setAddingToCart(false);
+    if (!result.ok && result.error) setMessage({ tone: "error", text: result.error });
+  }
+
   if (fontError) return <Alert tone="error">The designer fonts didn&apos;t load. Check your connection and reload the page.</Alert>;
   if (!fonts || !ctx) {
     return <p className="py-20 text-center text-ink-muted">Loading the designer…</p>;
@@ -274,9 +285,14 @@ export function Designer({ view, actions, initialTab }: { view: DesignView; acti
           <Button variant="secondary" size="sm" onClick={() => setShowProof((v) => !v)} aria-pressed={showProof}>
             {showProof ? "Back to editing" : "Preview proof"}
           </Button>
-          <Button size="sm" onClick={saveVersion} disabled={savingVersion || (isUpload && !artwork)}>
+          <Button size="sm" variant={version > 0 && saveState === "saved" ? "secondary" : "primary"} onClick={saveVersion} disabled={savingVersion || (isUpload && !artwork)}>
             {savingVersion ? "Checking…" : "Save design"}
           </Button>
+          {version > 0 && saveState === "saved" && (
+            <Button size="sm" onClick={addToCart} disabled={addingToCart}>
+              {addingToCart ? "Adding…" : `Add v${version} to basket`}
+            </Button>
+          )}
         </div>
       </div>
 

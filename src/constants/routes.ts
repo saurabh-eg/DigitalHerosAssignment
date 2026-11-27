@@ -39,6 +39,6 @@ export const ROUTES = {
 export const API_BASE = "/api/v1";
 
 export const PROTECTED_PREFIXES = {
-  customer: ["/account", "/design", "/checkout"],
+  customer: ["/account", "/design", "/checkout", "/cart"],
   admin: ["/admin"],
 } as const;
