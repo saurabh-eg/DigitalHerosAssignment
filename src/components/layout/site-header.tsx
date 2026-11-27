@@ -32,6 +32,13 @@ export function SiteHeader({ signOutAction }: { signOutAction: () => Promise<voi
         </nav>
         <UserMenu signOutAction={signOutAction} />
       </div>
+      <nav aria-label="Main" className="flex gap-1 overflow-x-auto border-t border-line px-2 md:hidden">
+        {NAV.map((item) => (
+          <Link key={item.href} href={item.href} className="shrink-0 px-3 py-2.5 text-sm text-ink-muted hover:text-ink">
+            {item.label}
+          </Link>
+        ))}
+      </nav>
     </header>
   );
 }

@@ -1,24 +1,24 @@
 @import "tailwindcss";
 
-/* D-025 design tokens: warm neutral base, one signal accent for every call to action. */
+/* D-025 (revised): press-room neutrals, rich-black ink, process magenta reserved for calls to action. */
 @theme {
-  --color-paper: #f4f1ea;
-  --color-surface: #fbfaf6;
-  --color-ink: #15171a;
-  --color-ink-muted: #5c5f63;
-  --color-line: #dcd6ca;
-  --color-accent: #e4572e;
-  --color-accent-hover: #c94620;
+  --color-paper: #eef0f2;
+  --color-surface: #ffffff;
+  --color-ink: #1a2030;
+  --color-ink-muted: #59616f;
+  --color-line: #cdd3db;
+  --color-accent: #c8006a;
+  --color-accent-hover: #a30057;
   --color-accent-ink: #ffffff;
-  --color-success: #2f7d4f;
-  --color-warning: #b7791f;
-  --color-danger: #c0392b;
+  --color-accent-soft: #fbe6f0;
+  --color-success: #1f7a4d;
+  --color-warning: #9a6400;
+  --color-danger: #c22a2a;
 
-  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-display: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plex), ui-sans-serif, system-ui, sans-serif;
 
-  --radius-card: 0.75rem;
+  --radius-card: 0.5rem;
   --ease-snap: cubic-bezier(0.2, 0.8, 0.2, 1);
   --duration-quick: 150ms;
   --duration-base: 250ms;
@@ -32,6 +32,8 @@
 
   body {
     font-family: var(--font-sans);
+    font-feature-settings: "tnum" 1;
+    line-height: 1.55;
   }
 
   h1,
@@ -39,7 +41,9 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
   }
 
   :focus-visible {
@@ -55,4 +59,24 @@
       transition-duration: 0.01ms !important;
     }
   }
+}
+
+/* Printer's crop marks at each corner of an element — used only on the job ticket. */
+@utility crop-marks {
+  position: relative;
+  --crop: 14px;
+  --crop-gap: 8px;
+  background-image:
+    linear-gradient(var(--color-ink), var(--color-ink)), linear-gradient(var(--color-ink), var(--color-ink)),
+    linear-gradient(var(--color-ink), var(--color-ink)), linear-gradient(var(--color-ink), var(--color-ink)),
+    linear-gradient(var(--color-ink), var(--color-ink)), linear-gradient(var(--color-ink), var(--color-ink)),
+    linear-gradient(var(--color-ink), var(--color-ink)), linear-gradient(var(--color-ink), var(--color-ink));
+  background-size:
+    var(--crop) 1px, 1px var(--crop), var(--crop) 1px, 1px var(--crop),
+    var(--crop) 1px, 1px var(--crop), var(--crop) 1px, 1px var(--crop);
+  background-position:
+    0 var(--crop-gap), var(--crop-gap) 0, 100% var(--crop-gap), calc(100% - var(--crop-gap)) 0,
+    0 calc(100% - var(--crop-gap)), var(--crop-gap) 100%, 100% calc(100% - var(--crop-gap)), calc(100% - var(--crop-gap)) 100%;
+  background-repeat: no-repeat;
+  padding: calc(var(--crop) + 6px);
 }

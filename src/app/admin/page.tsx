@@ -15,9 +15,9 @@ export default function AdminOverviewPage() {
         {PIPELINE_STAGES.map((stage, index) => (
           <li
             key={stage}
-            className="rounded-full border border-line bg-surface px-3 py-1.5 font-mono text-xs uppercase tracking-wider"
+            className="rounded-full border border-line bg-surface px-3 py-1.5 text-sm"
           >
-            {String(index + 1).padStart(2, "0")} · {ORDER_STATUS_LABEL[stage]}
+            {index + 1}. {ORDER_STATUS_LABEL[stage]}
           </li>
         ))}
       </ol>

@@ -18,7 +18,7 @@ export default async function AccountOverviewPage() {
       </header>
 
       <section className="rounded-[var(--radius-card)] border border-line bg-surface p-5">
-        <h2 className="font-mono text-xs uppercase tracking-[0.16em] text-ink-muted">Account status</h2>
+        <h2 className="text-lg font-semibold">Account status</h2>
         <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-3">
           <div>
             <dt className="text-ink-muted">Email</dt>

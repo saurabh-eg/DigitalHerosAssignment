@@ -13,8 +13,8 @@ export default async function AccountLayout({ children }: LayoutProps<"/account"
     <div className="mx-auto grid w-full max-w-6xl flex-1 gap-6 px-4 py-8 sm:px-6 md:grid-cols-[200px_1fr] md:gap-10 md:py-12">
       <aside className="flex flex-col gap-4">
         <div>
-          <p className="font-mono text-xs uppercase tracking-[0.16em] text-ink-muted">Account</p>
-          <p className="mt-1 truncate font-medium">{user.fullName ?? user.email}</p>
+          <p className="truncate font-display text-lg font-semibold">{user.fullName ?? user.email}</p>
+          <p className="text-sm text-ink-muted">Customer account</p>
         </div>
         <SideNav items={NAV} label="Account" />
       </aside>

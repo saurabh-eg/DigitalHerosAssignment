@@ -10,8 +10,8 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     <div className="mx-auto grid w-full max-w-7xl flex-1 gap-6 px-4 py-8 sm:px-6 md:grid-cols-[200px_1fr] md:gap-10">
       <aside className="flex flex-col gap-4">
         <div>
-          <p className="font-mono text-xs uppercase tracking-[0.16em] text-accent">Production console</p>
-          <p className="mt-1 truncate font-medium">{admin.fullName ?? admin.email}</p>
+          <p className="font-display text-lg font-semibold">Production console</p>
+          <p className="truncate text-sm text-ink-muted">{admin.fullName ?? admin.email}</p>
         </div>
         <SideNav items={NAV} label="Console" />
       </aside>
