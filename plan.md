@@ -248,7 +248,7 @@ All six §10 modules: account & profile status · order history with current sta
 - `next/image`, server components by default, designer lazy-loaded, font subsetting; Lighthouse mobile ≥ 90 target.
 - Accessibility basics; error, empty and loading states everywhere.
 
-### P11 — Testing, deployment, handover
+### P11 — Testing, deployment, handover ✅ (README, docs/schema.md, decisions; demo-data reset script)
 - Vitest: pricing, volume tiers, tax, `fit()`, file naming, role permissions.
 - Playwright: all 10 §16 checklist items.
 - Edge cases: tier boundaries; invalid/oversized uploads; malformed/empty/overflowing CSV rows; duplicate webhooks; failed payments; download before approval; access to another customer's order; failed print job retry.
