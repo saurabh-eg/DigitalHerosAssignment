@@ -2,7 +2,16 @@ import { SideNav } from "@/components/layout/side-nav";
 import { ROUTES } from "@/constants/routes";
 import * as authController from "@/modules/auth/auth.controller";
 
-const NAV = [{ href: ROUTES.admin.root, label: "Overview", exact: true }];
+const NAV = [
+  { href: ROUTES.admin.root, label: "Overview", exact: true },
+  { href: ROUTES.admin.pipeline, label: "Pipeline" },
+  { href: ROUTES.admin.jobs, label: "Job database" },
+  { href: ROUTES.admin.archive, label: "Archive" },
+  { href: ROUTES.admin.reports, label: "Reports" },
+  { href: ROUTES.admin.users, label: "Users" },
+  { href: ROUTES.admin.catalogue, label: "Products & templates" },
+  { href: ROUTES.admin.gallery, label: "Gallery" },
+];
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const admin = await authController.requirePageAdmin();

@@ -253,6 +253,88 @@ export async function listStatusHistory(orderId: string): Promise<StatusEvent[]>
   return data.map((h) => ({ fromStatus: h.from_status, toStatus: h.to_status, note: h.note, createdAt: h.created_at }));
 }
 
+export type JobRow = {
+  id: string;
+  orderNumber: string;
+  status: OrderStatus;
+  placedAt: string | null;
+  createdAt: string;
+  archivedAt: string | null;
+  totalMinor: number;
+  currency: string;
+  filesReady: boolean;
+  isReorder: boolean;
+  customerEmail: string;
+  customerName: string | null;
+  companyName: string | null;
+  productTypes: string[];
+  divisionSlugs: string[];
+  itemCount: number;
+  units: number;
+};
+
+/** Admin job database over the `admin_order_search` view (service role only). */
+export async function searchJobs(filters: {
+  q?: string;
+  status?: string;
+  division?: string;
+  from?: string;
+  to?: string;
+  archived: "exclude" | "only" | "include";
+  page: number;
+  pageSize: number;
+  statuses?: OrderStatus[];
+}): Promise<{ rows: JobRow[]; total: number }> {
+  let query = supabaseAdmin().from("admin_order_search").select("*", { count: "exact" });
+  if (filters.status) query = query.eq("status", filters.status as OrderStatus);
+  else if (filters.statuses) query = query.in("status", filters.statuses);
+  else query = query.neq("status", "quote");
+  if (filters.division) query = query.contains("division_slugs", [filters.division]);
+  if (filters.from) query = query.gte("placed_at", `${filters.from}T00:00:00Z`);
+  if (filters.to) query = query.lte("placed_at", `${filters.to}T23:59:59Z`);
+  if (filters.archived === "exclude") query = query.is("archived_at", null);
+  if (filters.archived === "only") query = query.not("archived_at", "is", null);
+  if (filters.q) {
+    // PostgREST `or` syntax: commas and parentheses would break the filter, so they're stripped.
+    const term = filters.q.replace(/[,()%*]/g, " ").trim();
+    if (term) query = query.or(`order_number.ilike.%${term}%,customer_email.ilike.%${term}%,customer_name.ilike.%${term}%,company_name.ilike.%${term}%`);
+  }
+  const fromRow = (filters.page - 1) * filters.pageSize;
+  const { data, error, count } = await query
+    .order("placed_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false })
+    .range(fromRow, fromRow + filters.pageSize - 1);
+  if (error) throw error;
+  return {
+    total: count ?? 0,
+    rows: data.map((r) => ({
+      id: r.id!,
+      orderNumber: r.order_number!,
+      status: r.status!,
+      placedAt: r.placed_at,
+      createdAt: r.created_at!,
+      archivedAt: r.archived_at,
+      totalMinor: r.total_minor!,
+      currency: r.currency!,
+      filesReady: r.files_ready!,
+      isReorder: r.reorder_of !== null,
+      customerEmail: r.customer_email!,
+      customerName: r.customer_name,
+      companyName: r.company_name,
+      productTypes: r.product_types ?? [],
+      divisionSlugs: r.division_slugs ?? [],
+      itemCount: r.item_count ?? 0,
+      units: r.units ?? 0,
+    })),
+  };
+}
+
+export async function countByStatus(): Promise<Record<string, number>> {
+  const { data, error } = await supabaseAdmin().from("orders").select("status").is("archived_at", null);
+  if (error) throw error;
+  return data.reduce<Record<string, number>>((acc, r) => ({ ...acc, [r.status]: (acc[r.status] ?? 0) + 1 }), {});
+}
+
 export async function findCustomerContact(customerId: string) {
   const { data, error } = await supabaseAdmin()
     .from("profiles")

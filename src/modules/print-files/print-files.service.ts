@@ -15,6 +15,10 @@ import type { Order, OrderItem } from "@/modules/orders/orders.types";
 import * as repo from "./print-files.repository";
 import { printWidthPx, scenePdf, scenePng } from "./print-files.renderer";
 import { Resvg } from "@resvg/resvg-js";
+import { zipSync } from "fflate";
+import { ROLE } from "@/constants/roles";
+import { AppError, notFound } from "@/lib/errors";
+import { requireRole } from "@/modules/auth/auth.service";
 
 const SAFETY_MARGIN_MS = 8_000;
 
@@ -180,7 +184,61 @@ export async function processQueue(budgetMs: number): Promise<{ processed: numbe
   return { processed, remaining: await repo.hasPendingJobs() };
 }
 
-export const listJobs = repo.listJobs;
-export const listPrintFiles = repo.listPrintFiles;
-export const signedProductionUrl = repo.signedProductionUrl;
-export const downloadProductionFile = repo.downloadProductionFile;
+// ─── Admin (PRD §11 ready indicators and production downloads) ─────────────
+
+export async function listJobsForOrder(orderId: string) {
+  await requireRole(ROLE.ADMIN);
+  return repo.listJobs(orderId);
+}
+
+export async function listFilesForOrder(orderId: string) {
+  await requireRole(ROLE.ADMIN);
+  const files = await repo.listPrintFiles(orderId);
+  return files.map((f) => ({ ...f, fileName: f.path.split("/").pop()! }));
+}
+
+/** Puts a failed (or stuck) job back in the queue with a fresh set of attempts. */
+export async function retryJob(jobId: string): Promise<void> {
+  await requireRole(ROLE.ADMIN);
+  await repo.updateJob(jobId, { status: "queued", attempts: 0, error: null, locked_at: null });
+}
+
+export async function requireAdmin(): Promise<void> {
+  await requireRole(ROLE.ADMIN);
+}
+
+/** Short-lived download link for one production file of an order (admin only; D-003). */
+export async function fileDownloadUrl(orderId: string, fileId: string): Promise<string> {
+  await requireRole(ROLE.ADMIN);
+  const file = (await repo.listPrintFiles(orderId)).find((f) => f.id === fileId);
+  if (!file) throw notFound("File not found.");
+  const url = await repo.signedProductionUrl(file.path, file.path.split("/").pop());
+  if (!url) throw notFound("File not found in storage.");
+  return url;
+}
+
+const MAX_ZIP_BYTES = 200 * 1024 * 1024;
+
+/** All production files of an order as one ZIP, built on demand (D-064). */
+export async function zipOrderFiles(orderId: string): Promise<{ fileName: string; bytes: Uint8Array }> {
+  await requireRole(ROLE.ADMIN);
+  const files = await repo.listPrintFiles(orderId);
+  if (files.length === 0) throw notFound("No production files yet.");
+  if (files.reduce((s, f) => s + (f.size_bytes ?? 0), 0) > MAX_ZIP_BYTES) {
+    throw new AppError("VALIDATION", "These files are too large to zip in one go. Download the merged PDF or individual files instead.");
+  }
+  const entries: Record<string, Uint8Array> = {};
+  // Download in small parallel batches to keep memory and connections bounded.
+  for (let i = 0; i < files.length; i += 10) {
+    const batch = await Promise.all(files.slice(i, i + 10).map(async (f) => [f.path.split("/").pop()!, await repo.downloadProductionFile(f.path)] as const));
+    for (const [name, bytes] of batch) if (bytes) entries[name] = bytes;
+  }
+  const folder = files[0].path.split("/")[1];
+  // PDFs and PNGs are already compressed, so store them as-is.
+  return { fileName: `${folder}.zip`, bytes: zipSync(entries, { level: 0 }) };
+}
+
+export async function queueStatus() {
+  await requireRole(ROLE.ADMIN);
+  return repo.queueCounts();
+}

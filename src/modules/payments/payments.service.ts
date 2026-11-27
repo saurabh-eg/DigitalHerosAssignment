@@ -9,7 +9,8 @@ import { SITE_CONFIG } from "@/constants/site-config";
 import { AppError, forbidden, notFound } from "@/lib/errors";
 import { formatMoney } from "@/lib/money";
 import { stripe, type Stripe } from "@/lib/stripe";
-import { requireUser } from "@/modules/auth/auth.service";
+import { ROLE } from "@/constants/roles";
+import { requireRole, requireUser } from "@/modules/auth/auth.service";
 import { refreshForCheckout } from "@/modules/cart/cart.service";
 import { getProductById } from "@/modules/catalogue/catalogue.service";
 import { createInvoiceForOrder } from "@/modules/invoices/invoices.service";
@@ -148,6 +149,17 @@ export async function fulfilSession(session: Stripe.Checkout.Session): Promise<s
     if (!hasProofHistory) await advanceAfterPayment(order, firstTime);
   }
   return order.id;
+}
+
+/** Staff tool: re-runs the post-payment steps for a paid order that stopped part-way (D-058). */
+export async function resumeFulfilment(orderId: string): Promise<void> {
+  await requireRole(ROLE.ADMIN);
+  const order = await ordersRepository.findOrder(orderId);
+  if (!order) throw notFound("Order not found.");
+  if (order.status !== ORDER_STATUS.ORDER && order.status !== ORDER_STATUS.ARTWORK) {
+    throw new AppError("CONFLICT", "Only paid orders waiting for invoice or proofs can be resumed.");
+  }
+  await advanceAfterPayment(order, false);
 }
 
 /** Success page: confirms the session belongs to the signed-in customer, then fulfils it if needed. */

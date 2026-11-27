@@ -60,6 +60,14 @@ export async function listJobs(orderId: string) {
   return data;
 }
 
+export async function queueCounts(): Promise<Record<PrintJobRow["status"], number>> {
+  const { data, error } = await supabaseAdmin().from("print_jobs").select("status");
+  if (error) throw error;
+  const counts = { queued: 0, running: 0, succeeded: 0, failed: 0 };
+  for (const j of data) counts[j.status] += 1;
+  return counts;
+}
+
 export async function hasPendingJobs(): Promise<boolean> {
   const { count, error } = await supabaseAdmin().from("print_jobs").select("id", { count: "exact", head: true }).in("status", ["queued", "running"]);
   if (error) throw error;
